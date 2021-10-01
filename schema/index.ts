@@ -42,23 +42,23 @@ const Node = interfaceType({
   },
 });
 
-const Assest = objectType({
-  name: "Assest",
-  definition(t) {
-    t.string("name");
-    t.id("assestId");
-  },
-});
+// const Assest = objectType({
+//   name: "Assest",
+//   definition(t) {
+//     t.string("name");
+//     t.id("assestId");
+//   },
+// });
 
-const Amount = objectType({
-  name: "Amount",
-  definition(t) {
-    t.int("number");
-    t.field("assest", {
-      type: Assest,
-    });
-  },
-});
+// const Amount = objectType({
+//   name: "Amount",
+//   definition(t) {
+//     t.int("number");
+//     t.field("assest", {
+//       type: Assest,
+//     });
+//   },
+// });
 
 const TranscationResult = objectType({
   name: "TranscationResult",

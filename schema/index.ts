@@ -20,6 +20,16 @@ import "../nexus-typegen";
 
 import { GraphQLDate } from "graphql-iso-date";
 
+/*
+TODO: 
+Add more fields on everything to bring it up to par with google/apple/general industry specs
+Break this into multiple files
+Add more fields
+remove some abgeuitity from the names
+fix some spelling
+touch up the mock data to make it more realisitic.
+*/
+
 const GQLDate = asNexusMethod(GraphQLDate, "date");
 
 const Node = interfaceType({

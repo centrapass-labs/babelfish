@@ -64,6 +64,7 @@ const Mutation = extendType({
   type: "Mutation",
   definition(t) {
     t.nonNull.field("submitTranscation", {
+      description: "Used to submit a transcation to the blockchain",
       type: TranscationResult,
       args: {
         transcationData: stringArg(),
@@ -78,20 +79,35 @@ const Mutation = extendType({
 
 const TicketStub = objectType({
   name: "TicketStub",
+  description: "A momento for attending the event",
   definition(t) {
     t.string("name");
+    t.field("event", {
+      description: "The event",
+      type: TicketedEvent,
+    });
+    t.field("orginalTicket", {
+      type: Ticket,
+      description: "The orignal ticket infomation",
+    });
   },
 });
 
 const TicketType = objectType({
   name: "TicketType",
+  description: "The type of a ticket IE General Admission, VIP, etc",
   definition(t) {
-    t.string("name");
-    t.field("event", {
+    t.string("name", {
+      description: "The name of this ticket type: IE 'General Admission'",
+    });
+    t.field("ticketedEvent", {
+      description: "The event this type is asscociated with",
       type: TicketedEvent,
     });
     t.connectionField("tickets", {
       type: Ticket,
+      description: "The tickets associated with this type.",
+
       totalCount() {
         return 10;
       },
@@ -104,15 +120,19 @@ const TicketType = objectType({
 
 const Ticket = objectType({
   name: "Ticket",
+  description: "A ticket for an Ticketed Event",
   definition(t) {
     t.field("event", {
       type: TicketedEvent,
     });
     t.field("ticketType", {
       type: TicketType,
+      description: "The type of a ticket IE General Admission, VIP, etc",
     });
     t.field("createTransferTranscation", {
       type: Transcation,
+      description:
+        "Creates a Transcation for transfering a Ticket to another address",
       args: {
         toAddress: nonNull(stringArg()),
       },
@@ -125,7 +145,8 @@ const Ticket = objectType({
     });
     t.field("createRedeemTranscation", {
       type: Transcation,
-
+      description:
+        "Creates a Transcation for redeeming the ticket for an entry pass, this manifests as a burn event onchain",
       resolve(parent) {
         return {
           expectedSigningAddress: "DFDSFSDFDSFSD",
@@ -136,12 +157,12 @@ const Ticket = objectType({
   },
 });
 
-const EventDetailsInput = inputObjectType({
-  name: "EventDetailsInput",
+const TicketedEventDetailsInput = inputObjectType({
+  name: "TicketedEventDetailsInput",
   definition(t) {
     t.nonNull.string("name");
-    t.string("venue");
-    t.string("description");
+    t.string("venue", { description: "The venue for the event" });
+    t.string("description", { description: "The description of the event" });
     t.date("dateTime");
   },
 });
@@ -153,6 +174,7 @@ const Address = objectType({
     t.id("address");
     t.connectionField("tickets", {
       type: Ticket,
+      description: "List all the Tickets held by this address.",
       totalCount() {
         return 10;
       },
@@ -162,6 +184,7 @@ const Address = objectType({
     });
     t.connectionField("ticketStubs", {
       type: TicketStub,
+      description: "List all the Ticket Stubs held by this address.",
       totalCount() {
         return 10;
       },
@@ -169,36 +192,40 @@ const Address = objectType({
         return [{}];
       },
     });
-    t.field("createEvent", {
+    t.field("createTicketedEvent", {
+      description:
+        "Creates a Transcation for signing that will create a new Event that can have tickets.",
       type: Transcation,
       args: {
-        eventDetails: nonNull(arg({ type: EventDetailsInput })),
+        eventDetails: nonNull(arg({ type: TicketedEventDetailsInput })),
       },
       resolve(parent) {
         return {
           expectedSigningAddress: parent.address,
-          transcationData: "AF2368954E456BC343AEF323237674432BFACEF",
+          transcationData:
+            "AF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEF",
         };
       },
     });
 
-    t.field("sentTo", {
-      type: Amount,
-      args: {
-        to: idArg(),
-        assestId: idArg(),
-      },
-      resolve(_parent, args) {
-        // DEMO DATA
-        return {
-          number: 100,
-          assest: {
-            name: "Some Assest",
-            assestId: args.assestId,
-          },
-        };
-      },
-    });
+    // TODO: sent to
+    // t.field("sentTo", {
+    //   type: Amount,
+    //   args: {
+    //     to: idArg(),
+    //     assestId: idArg(),
+    //   },
+    //   resolve(_parent, args) {
+    //     // DEMO DATA
+    //     return {
+    //       number: 100,
+    //       assest: {
+    //         name: "Some Assest",
+    //         assestId: args.assestId,
+    //       },
+    //     };
+    //   },
+    // });
   },
 });
 

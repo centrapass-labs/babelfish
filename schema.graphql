@@ -2,6 +2,7 @@
 ### Do not make changes to this file directly
 
 
+"""An address on this ledger."""
 type Address implements Node {
   address: ID
 
@@ -44,15 +45,16 @@ type Address implements Node {
   ): TicketConnection
 }
 
-type CENNZNode {
+"""A CENNZnet Node"""
+type CENNZnetNode {
   name: String
 }
 
-type CENNZNodeConnection {
+type CENNZnetNodeConnection {
   """
   https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
   """
-  edges: [CENNZNodeEdge]
+  edges: [CENNZnetNodeEdge]
 
   """
   https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
@@ -61,12 +63,12 @@ type CENNZNodeConnection {
   totalCount: Int
 }
 
-type CENNZNodeEdge {
+type CENNZnetNodeEdge {
   """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
   cursor: String!
 
   """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
-  node: CENNZNode
+  node: CENNZnetNode
 }
 
 """
@@ -79,10 +81,16 @@ type Mutation {
   submitTranscation(signature: String, transcationData: String): TranscationResult!
 }
 
+"""A Network/Ledger"""
 type Network {
+  """Query infomation about a particular address."""
   address(address: String!): Address
+
+  """Get an event via its id."""
   event(id: String!): TicketedEvent
   name: String
+
+  """Get the nodes in the network."""
   nodes(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
@@ -95,11 +103,12 @@ type Network {
 
     """Returns the last n elements from the list."""
     last: Int
-  ): CENNZNodeConnection
+  ): CENNZnetNodeConnection
 }
 
+"""The different Ledgers BabelFish can connect to"""
 enum NetworkEnum {
-  Nikau
+  CENNZnet:Nikau
 }
 
 interface Node {
@@ -174,11 +183,11 @@ type TicketEdge {
 
 """A momento for attending the event"""
 type TicketStub {
-  """The event"""
+  """The event this ticket was redeemed for."""
   event: TicketedEvent
   name: String
 
-  """The orignal ticket infomation"""
+  """The orignal ticket infomation."""
   orginalTicket: Ticket
 }
 
@@ -233,12 +242,24 @@ input TicketTypeInput {
   name: String!
 }
 
+"""An Event with Ticketed access."""
 type TicketedEvent {
+  """Create additional tickets of an existing ticket type"""
   createAdditionalTickets(quantity: Int, ticketTypeId: String): Transcation
+
+  """Create a new Ticket Type IE VIP"""
   createNewTicketType(quantity: Int, ticketType: TicketTypeInput): Transcation
+
+  """When the event is."""
   dateTime: Date
+
+  """The description of the ticketed event."""
   description: String
+
+  """The name of the the ticketed event."""
   name: String
+
+  """All the stubs generated from redeeming tickets"""
   ticketStubs(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
@@ -252,7 +273,11 @@ type TicketedEvent {
     """Returns the last n elements from the list."""
     last: Int
   ): TicketStubConnection
+
+  """The different types of tickets"""
   ticketTypes: [TicketType]
+
+  """All the tickets"""
   tickets(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
@@ -266,22 +291,33 @@ type TicketedEvent {
     """Returns the last n elements from the list."""
     last: Int
   ): TicketConnection
+
+  """The Venue of the ticket event."""
   venue: String
 }
 
+"""The details of your event."""
 input TicketedEventDetailsInput {
+  """The date and time of the event."""
   dateTime: Date
 
-  """The description of the event"""
+  """The description of the event. IE Fun on an Island"""
   description: String
+
+  """The name of the event. IE My Festival"""
   name: String!
 
-  """The venue for the event"""
+  """The venue for the event. IE On an Island"""
   venue: String
 }
 
 type Transcation {
-  expectedSigningAddress: String
+  """
+  The address we except the transcation to be signed with to get the desired results.
+  """
+  expectedSigningAddress: Address
+
+  """The transcation data hex encoded."""
   transcationData: String
 }
 

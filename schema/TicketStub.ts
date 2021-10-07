@@ -7,12 +7,12 @@ export const TicketStub = objectType({
   definition(t) {
     t.string("name");
     t.field("event", {
-      description: "The event",
+      description: "The event this ticket was redeemed for.",
       type: "TicketedEvent",
     });
     t.field("orginalTicket", {
       type: "Ticket",
-      description: "The orignal ticket infomation",
+      description: "The orignal ticket infomation.",
     });
   },
 });

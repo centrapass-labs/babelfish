@@ -1,35 +1,28 @@
-import {
-  arg,
-  enumType,
-  intArg,
-  interfaceType,
-  makeSchema,
-  objectType,
-  queryType,
-  stringArg,
-  list,
-  inputObjectType,
-  idArg,
-  nonNull,
-  connectionPlugin,
-  asNexusMethod,
-  extendType,
-} from "nexus";
-import { join } from "path";
+import { arg, objectType, inputObjectType, nonNull } from "nexus";
 import "../nexus-typegen";
 
 export const TicketedEventDetailsInput = inputObjectType({
   name: "TicketedEventDetailsInput",
+  description: "The details of your event.",
   definition(t) {
-    t.nonNull.string("name");
-    t.string("venue", { description: "The venue for the event" });
-    t.string("description", { description: "The description of the event" });
-    t.date("dateTime");
+    t.nonNull.string("name", {
+      description: "The name of the event. IE My Festival",
+    });
+    t.string("venue", {
+      description: "The venue for the event. IE On an Island",
+    });
+    t.string("description", {
+      description: "The description of the event. IE Fun on an Island",
+    });
+    t.date("dateTime", {
+      description: "The date and time of the event.",
+    });
   },
 });
 
 export const Address = objectType({
   name: "Address",
+  description: "An address on this ledger.",
   definition(t) {
     t.implements("Node");
     t.id("address");
@@ -62,7 +55,7 @@ export const Address = objectType({
       },
       resolve(parent) {
         return {
-          expectedSigningAddress: parent.address,
+          expectedSigningAddress: { address: parent.address },
           transcationData:
             "AF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEF",
         };

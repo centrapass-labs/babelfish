@@ -19,16 +19,21 @@ export const TicketTypeInput = inputObjectType({
 
 export const TicketedEvent = objectType({
   name: "TicketedEvent",
+  description: "An Event with Ticketed access.",
   definition(t) {
-    t.string("name");
-    t.string("venue");
-    t.string("description");
-    t.date("dateTime");
+    t.string("name", { description: "The name of the the ticketed event." });
+    t.string("venue", { description: "The Venue of the ticket event." });
+    t.string("description", {
+      description: "The description of the ticketed event.",
+    });
+    t.date("dateTime", { description: "When the event is." });
     t.field("ticketTypes", {
+      description: "The different types of tickets",
       type: list("TicketType"),
     });
     t.connectionField("tickets", {
       type: "Ticket",
+      description: "All the tickets",
       totalCount() {
         return 10;
       },
@@ -37,6 +42,7 @@ export const TicketedEvent = objectType({
       },
     });
     t.connectionField("ticketStubs", {
+      description: "All the stubs generated from redeeming tickets",
       type: "TicketStub",
       totalCount() {
         return 10;
@@ -46,6 +52,7 @@ export const TicketedEvent = objectType({
       },
     });
     t.field("createNewTicketType", {
+      description: "Create a new Ticket Type IE VIP",
       type: "Transcation",
       args: {
         quantity: intArg(),
@@ -55,14 +62,17 @@ export const TicketedEvent = objectType({
       },
       resolve(parent) {
         return {
-          expectedSigningAddress:
-            "5ENzTzH49uZKgYAD1Aa8zCpSfpcub2NkpBewoQgpDa6xkrif",
-          transcationData: "AF2368954E456BC343AEF323237674432BFACEF",
+          expectedSigningAddress: {
+            address: "5ENzTzH49uZKgYAD1Aa8zCpSfpcub2NkpBewoQgpDa6xkrif",
+          },
+          transcationData:
+            "AF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEF",
         };
       },
     });
 
     t.field("createAdditionalTickets", {
+      description: "Create additional tickets of an existing ticket type",
       type: "Transcation",
       args: {
         quantity: intArg(),
@@ -70,9 +80,11 @@ export const TicketedEvent = objectType({
       },
       resolve(parent) {
         return {
-          expectedSigningAddress:
-            "5ENzTzH49uZKgYAD1Aa8zCpSfpcub2NkpBewoQgpDa6xkrif",
-          transcationData: "AF2368954E456BC343AEF323237674432BFACEF",
+          expectedSigningAddress: {
+            address: "5ENzTzH49uZKgYAD1Aa8zCpSfpcub2NkpBewoQgpDa6xkrif",
+          },
+          transcationData:
+            "AF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEF",
         };
       },
     });

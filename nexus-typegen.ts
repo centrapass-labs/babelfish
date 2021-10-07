@@ -51,7 +51,7 @@ export interface NexusGenInputs {
 }
 
 export interface NexusGenEnums {
-  NetworkEnum: "Nikau"
+  NetworkEnum: "CENNZnet:Nikau"
 }
 
 export interface NexusGenScalars {
@@ -68,17 +68,17 @@ export interface NexusGenObjects {
     address?: string | null; // ID
     id?: string | null; // ID
   }
-  CENNZNode: { // root type
+  CENNZnetNode: { // root type
     name?: string | null; // String
   }
-  CENNZNodeConnection: { // root type
-    edges?: Array<NexusGenRootTypes['CENNZNodeEdge'] | null> | null; // [CENNZNodeEdge]
+  CENNZnetNodeConnection: { // root type
+    edges?: Array<NexusGenRootTypes['CENNZnetNodeEdge'] | null> | null; // [CENNZnetNodeEdge]
     pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
     totalCount?: number | null; // Int
   }
-  CENNZNodeEdge: { // root type
+  CENNZnetNodeEdge: { // root type
     cursor: string; // String!
-    node?: NexusGenRootTypes['CENNZNode'] | null; // CENNZNode
+    node?: NexusGenRootTypes['CENNZnetNode'] | null; // CENNZnetNode
   }
   Mutation: {};
   Network: { // root type
@@ -130,7 +130,7 @@ export interface NexusGenObjects {
     venue?: string | null; // String
   }
   Transcation: { // root type
-    expectedSigningAddress?: string | null; // String
+    expectedSigningAddress?: NexusGenRootTypes['Address'] | null; // Address
     transcationData?: string | null; // String
   }
   TranscationResult: { // root type
@@ -157,17 +157,17 @@ export interface NexusGenFieldTypes {
     ticketStubs: NexusGenRootTypes['TicketStubConnection'] | null; // TicketStubConnection
     tickets: NexusGenRootTypes['TicketConnection'] | null; // TicketConnection
   }
-  CENNZNode: { // field return type
+  CENNZnetNode: { // field return type
     name: string | null; // String
   }
-  CENNZNodeConnection: { // field return type
-    edges: Array<NexusGenRootTypes['CENNZNodeEdge'] | null> | null; // [CENNZNodeEdge]
+  CENNZnetNodeConnection: { // field return type
+    edges: Array<NexusGenRootTypes['CENNZnetNodeEdge'] | null> | null; // [CENNZnetNodeEdge]
     pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
     totalCount: number | null; // Int
   }
-  CENNZNodeEdge: { // field return type
+  CENNZnetNodeEdge: { // field return type
     cursor: string; // String!
-    node: NexusGenRootTypes['CENNZNode'] | null; // CENNZNode
+    node: NexusGenRootTypes['CENNZnetNode'] | null; // CENNZnetNode
   }
   Mutation: { // field return type
     submitTranscation: NexusGenRootTypes['TranscationResult']; // TranscationResult!
@@ -176,7 +176,7 @@ export interface NexusGenFieldTypes {
     address: NexusGenRootTypes['Address'] | null; // Address
     event: NexusGenRootTypes['TicketedEvent'] | null; // TicketedEvent
     name: string | null; // String
-    nodes: NexusGenRootTypes['CENNZNodeConnection'] | null; // CENNZNodeConnection
+    nodes: NexusGenRootTypes['CENNZnetNodeConnection'] | null; // CENNZnetNodeConnection
   }
   PageInfo: { // field return type
     endCursor: string | null; // String
@@ -233,7 +233,7 @@ export interface NexusGenFieldTypes {
     venue: string | null; // String
   }
   Transcation: { // field return type
-    expectedSigningAddress: string | null; // String
+    expectedSigningAddress: NexusGenRootTypes['Address'] | null; // Address
     transcationData: string | null; // String
   }
   TranscationResult: { // field return type
@@ -253,17 +253,17 @@ export interface NexusGenFieldTypeNames {
     ticketStubs: 'TicketStubConnection'
     tickets: 'TicketConnection'
   }
-  CENNZNode: { // field return type name
+  CENNZnetNode: { // field return type name
     name: 'String'
   }
-  CENNZNodeConnection: { // field return type name
-    edges: 'CENNZNodeEdge'
+  CENNZnetNodeConnection: { // field return type name
+    edges: 'CENNZnetNodeEdge'
     pageInfo: 'PageInfo'
     totalCount: 'Int'
   }
-  CENNZNodeEdge: { // field return type name
+  CENNZnetNodeEdge: { // field return type name
     cursor: 'String'
-    node: 'CENNZNode'
+    node: 'CENNZnetNode'
   }
   Mutation: { // field return type name
     submitTranscation: 'TranscationResult'
@@ -272,7 +272,7 @@ export interface NexusGenFieldTypeNames {
     address: 'Address'
     event: 'TicketedEvent'
     name: 'String'
-    nodes: 'CENNZNodeConnection'
+    nodes: 'CENNZnetNodeConnection'
   }
   PageInfo: { // field return type name
     endCursor: 'String'
@@ -329,7 +329,7 @@ export interface NexusGenFieldTypeNames {
     venue: 'String'
   }
   Transcation: { // field return type name
-    expectedSigningAddress: 'String'
+    expectedSigningAddress: 'Address'
     transcationData: 'String'
   }
   TranscationResult: { // field return type name

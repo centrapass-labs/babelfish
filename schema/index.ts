@@ -21,6 +21,7 @@ import "../nexus-typegen";
 import * as TicketStub from "./TicketStub";
 import * as TicketedEvent from "./TicketedEvent";
 import * as Ticket from "./Ticket";
+import * as Address from "./Address";
 
 import { GraphQLDate } from "graphql-iso-date";
 
@@ -91,7 +92,8 @@ const Mutation = extendType({
 });
 
 const CENNZNode = objectType({
-  name: "CENNZNode",
+  name: "CENNZnetNode",
+  description: "A CENNZnet Node",
   definition(t) {
     t.nullable.string("name");
   },
@@ -99,23 +101,32 @@ const CENNZNode = objectType({
 
 const NetworkEnum = enumType({
   name: "NetworkEnum",
-  members: ["Nikau"],
+  description: "The different Ledgers BabelFish can connect to",
+  members: ["CENNZnet:Nikau"],
 });
 
 const Transcation = objectType({
   name: "Transcation",
   definition(t) {
-    t.string("transcationData");
-    t.string("expectedSigningAddress");
+    t.string("transcationData", {
+      description: "The transcation data hex encoded.",
+    });
+    t.field("expectedSigningAddress", {
+      type: "Address",
+      description:
+        "The address we except the transcation to be signed with to get the desired results.",
+    });
   },
 });
 
 const Network = objectType({
   name: "Network",
+  description: "A Network/Ledger",
   definition(t) {
     t.string("name");
     t.field("address", {
       type: "Address",
+      description: "Query infomation about a particular address.",
       args: {
         address: nonNull(stringArg()),
       },
@@ -129,6 +140,7 @@ const Network = objectType({
       args: {
         id: nonNull(stringArg()),
       },
+      description: "Get an event via its id.",
       type: "TicketedEvent",
       resolve() {
         return {
@@ -138,7 +150,7 @@ const Network = objectType({
     });
     t.connectionField("nodes", {
       type: CENNZNode,
-
+      description: "Get the nodes in the network.",
       totalCount() {
         // DEMO DATA
         return 42;
@@ -172,7 +184,17 @@ const Query = queryType({
 // any valid Nexus or graphql-js objects to add to the schema,
 // so you can be pretty flexible with how you import types here.
 export default makeSchema({
-  types: [Node, Query, GQLDate, Mutation, TicketStub, TicketedEvent, Ticket],
+  types: [
+    Node,
+    Query,
+    GQLDate,
+    Mutation,
+    TicketStub,
+    TicketedEvent,
+    Ticket,
+    Transcation,
+    Address,
+  ],
   plugins: [
     connectionPlugin({
       extendConnection: {

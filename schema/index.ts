@@ -18,12 +18,15 @@ import {
 import { join } from "path";
 import "../nexus-typegen";
 
+import * as TicketStub from "./TicketStub";
+import * as TicketedEvent from "./TicketedEvent";
+import * as Ticket from "./Ticket";
+
 import { GraphQLDate } from "graphql-iso-date";
 
 /*
 TODO: 
 Add more fields on everything to bring it up to par with google/apple/general industry specs
-Break this into multiple files
 Add more fields
 remove some abgeuitity from the names
 fix some spelling
@@ -87,158 +90,6 @@ const Mutation = extendType({
   },
 });
 
-const TicketStub = objectType({
-  name: "TicketStub",
-  description: "A momento for attending the event",
-  definition(t) {
-    t.string("name");
-    t.field("event", {
-      description: "The event",
-      type: TicketedEvent,
-    });
-    t.field("orginalTicket", {
-      type: Ticket,
-      description: "The orignal ticket infomation",
-    });
-  },
-});
-
-const TicketType = objectType({
-  name: "TicketType",
-  description: "The type of a ticket IE General Admission, VIP, etc",
-  definition(t) {
-    t.string("name", {
-      description: "The name of this ticket type: IE 'General Admission'",
-    });
-    t.field("ticketedEvent", {
-      description: "The event this type is asscociated with",
-      type: TicketedEvent,
-    });
-    t.connectionField("tickets", {
-      type: Ticket,
-      description: "The tickets associated with this type.",
-
-      totalCount() {
-        return 10;
-      },
-      nodes() {
-        return [{}];
-      },
-    });
-  },
-});
-
-const Ticket = objectType({
-  name: "Ticket",
-  description: "A ticket for an Ticketed Event",
-  definition(t) {
-    t.field("event", {
-      type: TicketedEvent,
-    });
-    t.field("ticketType", {
-      type: TicketType,
-      description: "The type of a ticket IE General Admission, VIP, etc",
-    });
-    t.field("createTransferTranscation", {
-      type: Transcation,
-      description:
-        "Creates a Transcation for transfering a Ticket to another address",
-      args: {
-        toAddress: nonNull(stringArg()),
-      },
-      resolve(parent) {
-        return {
-          expectedSigningAddress: "DFDSFSDFDSFSD",
-          transcationData: "AF2368954E456BC343AEF323237674432BFACEF",
-        };
-      },
-    });
-    t.field("createRedeemTranscation", {
-      type: Transcation,
-      description:
-        "Creates a Transcation for redeeming the ticket for an entry pass, this manifests as a burn event onchain",
-      resolve(parent) {
-        return {
-          expectedSigningAddress: "DFDSFSDFDSFSD",
-          transcationData: "AF2368954E456BC343AEF323237674432BFACEF",
-        };
-      },
-    });
-  },
-});
-
-const TicketedEventDetailsInput = inputObjectType({
-  name: "TicketedEventDetailsInput",
-  definition(t) {
-    t.nonNull.string("name");
-    t.string("venue", { description: "The venue for the event" });
-    t.string("description", { description: "The description of the event" });
-    t.date("dateTime");
-  },
-});
-
-const Address = objectType({
-  name: "Address",
-  definition(t) {
-    t.implements(Node);
-    t.id("address");
-    t.connectionField("tickets", {
-      type: Ticket,
-      description: "List all the Tickets held by this address.",
-      totalCount() {
-        return 10;
-      },
-      nodes() {
-        return [{}];
-      },
-    });
-    t.connectionField("ticketStubs", {
-      type: TicketStub,
-      description: "List all the Ticket Stubs held by this address.",
-      totalCount() {
-        return 10;
-      },
-      nodes() {
-        return [{}];
-      },
-    });
-    t.field("createTicketedEvent", {
-      description:
-        "Creates a Transcation for signing that will create a new Event that can have tickets.",
-      type: Transcation,
-      args: {
-        eventDetails: nonNull(arg({ type: TicketedEventDetailsInput })),
-      },
-      resolve(parent) {
-        return {
-          expectedSigningAddress: parent.address,
-          transcationData:
-            "AF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEF",
-        };
-      },
-    });
-
-    // TODO: sent to
-    // t.field("sentTo", {
-    //   type: Amount,
-    //   args: {
-    //     to: idArg(),
-    //     assestId: idArg(),
-    //   },
-    //   resolve(_parent, args) {
-    //     // DEMO DATA
-    //     return {
-    //       number: 100,
-    //       assest: {
-    //         name: "Some Assest",
-    //         assestId: args.assestId,
-    //       },
-    //     };
-    //   },
-    // });
-  },
-});
-
 const CENNZNode = objectType({
   name: "CENNZNode",
   definition(t) {
@@ -259,83 +110,12 @@ const Transcation = objectType({
   },
 });
 
-const TicketTypeInput = inputObjectType({
-  name: "TicketTypeInput",
-  definition(t) {
-    t.nonNull.string("name");
-    t.string("fineprint");
-    t.string("description");
-  },
-});
-
-const TicketedEvent = objectType({
-  name: "Event",
-  definition(t) {
-    t.string("name");
-    t.string("venue");
-    t.string("description");
-    t.date("dateTime");
-    t.field("ticketTypes", {
-      type: list(TicketType),
-    });
-    t.connectionField("tickets", {
-      type: Ticket,
-      totalCount() {
-        return 10;
-      },
-      nodes() {
-        return [{}];
-      },
-    });
-    t.connectionField("ticketStubs", {
-      type: TicketStub,
-      totalCount() {
-        return 10;
-      },
-      nodes() {
-        return [{}];
-      },
-    });
-    t.field("createNewTicketType", {
-      type: Transcation,
-      args: {
-        quantity: intArg(),
-        ticketType: arg({
-          type: TicketTypeInput,
-        }),
-      },
-      resolve(parent) {
-        return {
-          expectedSigningAddress:
-            "5ENzTzH49uZKgYAD1Aa8zCpSfpcub2NkpBewoQgpDa6xkrif",
-          transcationData: "AF2368954E456BC343AEF323237674432BFACEF",
-        };
-      },
-    });
-
-    t.field("createAdditionalTickets", {
-      type: Transcation,
-      args: {
-        quantity: intArg(),
-        ticketTypeId: stringArg(),
-      },
-      resolve(parent) {
-        return {
-          expectedSigningAddress:
-            "5ENzTzH49uZKgYAD1Aa8zCpSfpcub2NkpBewoQgpDa6xkrif",
-          transcationData: "AF2368954E456BC343AEF323237674432BFACEF",
-        };
-      },
-    });
-  },
-});
-
 const Network = objectType({
   name: "Network",
   definition(t) {
     t.string("name");
     t.field("address", {
-      type: Address,
+      type: "Address",
       args: {
         address: nonNull(stringArg()),
       },
@@ -349,7 +129,7 @@ const Network = objectType({
       args: {
         id: nonNull(stringArg()),
       },
-      type: TicketedEvent,
+      type: "TicketedEvent",
       resolve() {
         return {
           name: "My Awesome Festival",
@@ -392,7 +172,7 @@ const Query = queryType({
 // any valid Nexus or graphql-js objects to add to the schema,
 // so you can be pretty flexible with how you import types here.
 export default makeSchema({
-  types: [Node, Query, GQLDate, Mutation],
+  types: [Node, Query, GQLDate, Mutation, TicketStub, TicketedEvent, Ticket],
   plugins: [
     connectionPlugin({
       extendConnection: {

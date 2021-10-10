@@ -10,9 +10,9 @@ export const TicketStub = objectType({
       description: "The event this ticket was redeemed for.",
       type: "TicketedEvent",
     });
-    t.field("orginalTicket", {
+    t.field("originalTicket", {
       type: "Ticket",
-      description: "The orignal ticket infomation.",
+      description: "The original ticket information.",
     });
   },
 });

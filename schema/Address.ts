@@ -48,37 +48,18 @@ export const Address = objectType({
     });
     t.field("createTicketedEvent", {
       description:
-        "Creates a Transcation for signing that will create a new Event that can have tickets.",
-      type: "Transcation",
+        "Creates a Transaction for signing that will create a new Event that can have tickets.",
+      type: "Transaction",
       args: {
         eventDetails: nonNull(arg({ type: TicketedEventDetailsInput })),
       },
       resolve(parent) {
         return {
           expectedSigningAddress: { address: parent.address },
-          transcationData:
+          transactionData:
             "AF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEF",
         };
       },
     });
-
-    // TODO: sent to
-    // t.field("sentTo", {
-    //   type: Amount,
-    //   args: {
-    //     to: idArg(),
-    //     assestId: idArg(),
-    //   },
-    //   resolve(_parent, args) {
-    //     // DEMO DATA
-    //     return {
-    //       number: 100,
-    //       assest: {
-    //         name: "Some Assest",
-    //         assestId: args.assestId,
-    //       },
-    //     };
-    //   },
-    // });
   },
 });

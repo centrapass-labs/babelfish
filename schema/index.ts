@@ -1,15 +1,11 @@
 import {
   arg,
   enumType,
-  intArg,
   interfaceType,
   makeSchema,
   objectType,
   queryType,
   stringArg,
-  list,
-  inputObjectType,
-  idArg,
   nonNull,
   connectionPlugin,
   asNexusMethod,
@@ -46,26 +42,8 @@ const Node = interfaceType({
   },
 });
 
-// const Assest = objectType({
-//   name: "Assest",
-//   definition(t) {
-//     t.string("name");
-//     t.id("assestId");
-//   },
-// });
-
-// const Amount = objectType({
-//   name: "Amount",
-//   definition(t) {
-//     t.int("number");
-//     t.field("assest", {
-//       type: Assest,
-//     });
-//   },
-// });
-
-const TranscationResult = objectType({
-  name: "TranscationResult",
+const TransactionResult = objectType({
+  name: "TransactionResult",
   definition(t) {
     t.string("status", {
       resolve: () => "Success",
@@ -77,11 +55,11 @@ const TranscationResult = objectType({
 const Mutation = extendType({
   type: "Mutation",
   definition(t) {
-    t.nonNull.field("submitTranscation", {
-      description: "Used to submit a transcation to the blockchain",
-      type: TranscationResult,
+    t.nonNull.field("submitTransaction", {
+      description: "Used to submit a transaction to the blockchain",
+      type: TransactionResult,
       args: {
-        transcationData: stringArg(),
+        transactionData: stringArg(),
         signature: stringArg(),
       },
       resolve(_root, args, ctx) {
@@ -102,19 +80,19 @@ const CENNZNode = objectType({
 const NetworkEnum = enumType({
   name: "NetworkEnum",
   description: "The different Ledgers BabelFish can connect to",
-  members: ["CENNZnet:Nikau"],
+  members: ["CENNZnet_Nikau"],
 });
 
-const Transcation = objectType({
-  name: "Transcation",
+const Transaction = objectType({
+  name: "Transaction",
   definition(t) {
-    t.string("transcationData", {
-      description: "The transcation data hex encoded.",
+    t.string("transactionData", {
+      description: "The transaction data hex encoded.",
     });
     t.field("expectedSigningAddress", {
       type: "Address",
       description:
-        "The address we except the transcation to be signed with to get the desired results.",
+        "The address we except the transaction to be signed with to get the desired results.",
     });
   },
 });
@@ -126,7 +104,7 @@ const Network = objectType({
     t.string("name");
     t.field("address", {
       type: "Address",
-      description: "Query infomation about a particular address.",
+      description: "Query information about a particular address.",
       args: {
         address: nonNull(stringArg()),
       },
@@ -173,7 +151,7 @@ const Query = queryType({
       },
       resolve() {
         return {
-          name: "Nikau",
+          name: "CENNZnet_Nikau",
         };
       },
     });
@@ -192,7 +170,7 @@ export default makeSchema({
     TicketStub,
     TicketedEvent,
     Ticket,
-    Transcation,
+    Transaction,
     Address,
   ],
   plugins: [

@@ -7,9 +7,9 @@ type Address implements Node {
   address: ID
 
   """
-  Creates a Transcation for signing that will create a new Event that can have tickets.
+  Creates a Transaction for signing that will create a new Event that can have tickets.
   """
-  createTicketedEvent(eventDetails: TicketedEventDetailsInput!): Transcation
+  createTicketedEvent(eventDetails: TicketedEventDetailsInput!): Transaction
 
   """Unique identifier for the resource"""
   id: ID
@@ -77,13 +77,13 @@ A date string, such as 2007-12-03, compliant with the `full-date` format outline
 scalar Date
 
 type Mutation {
-  """Used to submit a transcation to the blockchain"""
-  submitTranscation(signature: String, transcationData: String): TranscationResult!
+  """Used to submit a transaction to the blockchain"""
+  submitTransaction(signature: String, transactionData: String): TransactionResult!
 }
 
 """A Network/Ledger"""
 type Network {
-  """Query infomation about a particular address."""
+  """Query information about a particular address."""
   address(address: String!): Address
 
   """Get an event via its id."""
@@ -108,7 +108,7 @@ type Network {
 
 """The different Ledgers BabelFish can connect to"""
 enum NetworkEnum {
-  CENNZnet:Nikau
+  CENNZnet_Nikau
 }
 
 interface Node {
@@ -148,12 +148,12 @@ type Query {
 """A ticket for an Ticketed Event"""
 type Ticket {
   """
-  Creates a Transcation for redeeming the ticket for an entry pass, this manifests as a burn event onchain
+  Creates a Transaction for redeeming the ticket for an entry pass, this manifests as a burn event onchain
   """
-  createRedeemTranscation: Transcation
+  createRedeemTransaction: Transaction
 
-  """Creates a Transcation for transfering a Ticket to another address"""
-  createTransferTranscation(toAddress: String!): Transcation
+  """Creates a Transaction for transferring a Ticket to another address"""
+  createTransferTransaction(toAddress: String!): Transaction
   event: TicketedEvent
 
   """The type of a ticket IE General Admission, VIP, etc"""
@@ -187,8 +187,8 @@ type TicketStub {
   event: TicketedEvent
   name: String
 
-  """The orignal ticket infomation."""
-  orginalTicket: Ticket
+  """The original ticket information."""
+  originalTicket: Ticket
 }
 
 type TicketStubConnection {
@@ -217,7 +217,7 @@ type TicketType {
   """The name of this ticket type: IE 'General Admission'"""
   name: String
 
-  """The event this type is asscociated with"""
+  """The event this type is associated with"""
   ticketedEvent: TicketedEvent
 
   """The tickets associated with this type."""
@@ -245,10 +245,10 @@ input TicketTypeInput {
 """An Event with Ticketed access."""
 type TicketedEvent {
   """Create additional tickets of an existing ticket type"""
-  createAdditionalTickets(quantity: Int, ticketTypeId: String): Transcation
+  createAdditionalTickets(quantity: Int, ticketTypeId: String): Transaction
 
   """Create a new Ticket Type IE VIP"""
-  createNewTicketType(quantity: Int, ticketType: TicketTypeInput): Transcation
+  createNewTicketType(quantity: Int, ticketType: TicketTypeInput): Transaction
 
   """When the event is."""
   dateTime: Date
@@ -311,17 +311,17 @@ input TicketedEventDetailsInput {
   venue: String
 }
 
-type Transcation {
+type Transaction {
   """
-  The address we except the transcation to be signed with to get the desired results.
+  The address we except the transaction to be signed with to get the desired results.
   """
   expectedSigningAddress: Address
 
-  """The transcation data hex encoded."""
-  transcationData: String
+  """The transaction data hex encoded."""
+  transactionData: String
 }
 
-type TranscationResult {
+type TransactionResult {
   result: Node
   status: String
 }

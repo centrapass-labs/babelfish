@@ -1,20 +1,4 @@
-import {
-  arg,
-  enumType,
-  intArg,
-  interfaceType,
-  makeSchema,
-  objectType,
-  queryType,
-  stringArg,
-  list,
-  inputObjectType,
-  idArg,
-  nonNull,
-  connectionPlugin,
-  asNexusMethod,
-  extendType,
-} from "nexus";
+import { objectType, stringArg, nonNull } from "nexus";
 import "../nexus-typegen";
 
 export const TicketType = objectType({
@@ -25,7 +9,7 @@ export const TicketType = objectType({
       description: "The name of this ticket type: IE 'General Admission'",
     });
     t.field("ticketedEvent", {
-      description: "The event this type is asscociated with",
+      description: "The event this type is associated with",
       type: "TicketedEvent",
     });
     t.connectionField("tickets", {
@@ -53,29 +37,29 @@ export const Ticket = objectType({
       type: "TicketType",
       description: "The type of a ticket IE General Admission, VIP, etc",
     });
-    t.field("createTransferTranscation", {
-      type: "Transcation",
+    t.field("createTransferTransaction", {
+      type: "Transaction",
       description:
-        "Creates a Transcation for transfering a Ticket to another address",
+        "Creates a Transaction for transferring a Ticket to another address",
       args: {
         toAddress: nonNull(stringArg()),
       },
       resolve(parent) {
         return {
           expectedSigningAddress: { address: "DFDSFSDFDSFSD" },
-          transcationData:
+          transactionData:
             "AF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEF",
         };
       },
     });
-    t.field("createRedeemTranscation", {
-      type: "Transcation",
+    t.field("createRedeemTransaction", {
+      type: "Transaction",
       description:
-        "Creates a Transcation for redeeming the ticket for an entry pass, this manifests as a burn event onchain",
+        "Creates a Transaction for redeeming the ticket for an entry pass, this manifests as a burn event onchain",
       resolve(parent) {
         return {
           expectedSigningAddress: { address: "DFDSFSDFDSFSD" },
-          transcationData:
+          transactionData:
             "AF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEF",
         };
       },

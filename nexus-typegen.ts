@@ -51,7 +51,7 @@ export interface NexusGenInputs {
 }
 
 export interface NexusGenEnums {
-  NetworkEnum: "CENNZnet:Nikau"
+  NetworkEnum: "CENNZnet_Nikau"
 }
 
 export interface NexusGenScalars {
@@ -107,7 +107,7 @@ export interface NexusGenObjects {
   TicketStub: { // root type
     event?: NexusGenRootTypes['TicketedEvent'] | null; // TicketedEvent
     name?: string | null; // String
-    orginalTicket?: NexusGenRootTypes['Ticket'] | null; // Ticket
+    originalTicket?: NexusGenRootTypes['Ticket'] | null; // Ticket
   }
   TicketStubConnection: { // root type
     edges?: Array<NexusGenRootTypes['TicketStubEdge'] | null> | null; // [TicketStubEdge]
@@ -129,11 +129,11 @@ export interface NexusGenObjects {
     ticketTypes?: Array<NexusGenRootTypes['TicketType'] | null> | null; // [TicketType]
     venue?: string | null; // String
   }
-  Transcation: { // root type
+  Transaction: { // root type
     expectedSigningAddress?: NexusGenRootTypes['Address'] | null; // Address
-    transcationData?: string | null; // String
+    transactionData?: string | null; // String
   }
-  TranscationResult: { // root type
+  TransactionResult: { // root type
     result?: NexusGenRootTypes['Node'] | null; // Node
   }
 }
@@ -152,7 +152,7 @@ export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars & NexusGenEnu
 export interface NexusGenFieldTypes {
   Address: { // field return type
     address: string | null; // ID
-    createTicketedEvent: NexusGenRootTypes['Transcation'] | null; // Transcation
+    createTicketedEvent: NexusGenRootTypes['Transaction'] | null; // Transaction
     id: string | null; // ID
     ticketStubs: NexusGenRootTypes['TicketStubConnection'] | null; // TicketStubConnection
     tickets: NexusGenRootTypes['TicketConnection'] | null; // TicketConnection
@@ -170,7 +170,7 @@ export interface NexusGenFieldTypes {
     node: NexusGenRootTypes['CENNZnetNode'] | null; // CENNZnetNode
   }
   Mutation: { // field return type
-    submitTranscation: NexusGenRootTypes['TranscationResult']; // TranscationResult!
+    submitTransaction: NexusGenRootTypes['TransactionResult']; // TransactionResult!
   }
   Network: { // field return type
     address: NexusGenRootTypes['Address'] | null; // Address
@@ -188,8 +188,8 @@ export interface NexusGenFieldTypes {
     network: NexusGenRootTypes['Network'] | null; // Network
   }
   Ticket: { // field return type
-    createRedeemTranscation: NexusGenRootTypes['Transcation'] | null; // Transcation
-    createTransferTranscation: NexusGenRootTypes['Transcation'] | null; // Transcation
+    createRedeemTransaction: NexusGenRootTypes['Transaction'] | null; // Transaction
+    createTransferTransaction: NexusGenRootTypes['Transaction'] | null; // Transaction
     event: NexusGenRootTypes['TicketedEvent'] | null; // TicketedEvent
     ticketType: NexusGenRootTypes['TicketType'] | null; // TicketType
   }
@@ -205,7 +205,7 @@ export interface NexusGenFieldTypes {
   TicketStub: { // field return type
     event: NexusGenRootTypes['TicketedEvent'] | null; // TicketedEvent
     name: string | null; // String
-    orginalTicket: NexusGenRootTypes['Ticket'] | null; // Ticket
+    originalTicket: NexusGenRootTypes['Ticket'] | null; // Ticket
   }
   TicketStubConnection: { // field return type
     edges: Array<NexusGenRootTypes['TicketStubEdge'] | null> | null; // [TicketStubEdge]
@@ -222,8 +222,8 @@ export interface NexusGenFieldTypes {
     tickets: NexusGenRootTypes['TicketConnection'] | null; // TicketConnection
   }
   TicketedEvent: { // field return type
-    createAdditionalTickets: NexusGenRootTypes['Transcation'] | null; // Transcation
-    createNewTicketType: NexusGenRootTypes['Transcation'] | null; // Transcation
+    createAdditionalTickets: NexusGenRootTypes['Transaction'] | null; // Transaction
+    createNewTicketType: NexusGenRootTypes['Transaction'] | null; // Transaction
     dateTime: NexusGenScalars['Date'] | null; // Date
     description: string | null; // String
     name: string | null; // String
@@ -232,11 +232,11 @@ export interface NexusGenFieldTypes {
     tickets: NexusGenRootTypes['TicketConnection'] | null; // TicketConnection
     venue: string | null; // String
   }
-  Transcation: { // field return type
+  Transaction: { // field return type
     expectedSigningAddress: NexusGenRootTypes['Address'] | null; // Address
-    transcationData: string | null; // String
+    transactionData: string | null; // String
   }
-  TranscationResult: { // field return type
+  TransactionResult: { // field return type
     result: NexusGenRootTypes['Node'] | null; // Node
     status: string | null; // String
   }
@@ -248,7 +248,7 @@ export interface NexusGenFieldTypes {
 export interface NexusGenFieldTypeNames {
   Address: { // field return type name
     address: 'ID'
-    createTicketedEvent: 'Transcation'
+    createTicketedEvent: 'Transaction'
     id: 'ID'
     ticketStubs: 'TicketStubConnection'
     tickets: 'TicketConnection'
@@ -266,7 +266,7 @@ export interface NexusGenFieldTypeNames {
     node: 'CENNZnetNode'
   }
   Mutation: { // field return type name
-    submitTranscation: 'TranscationResult'
+    submitTransaction: 'TransactionResult'
   }
   Network: { // field return type name
     address: 'Address'
@@ -284,8 +284,8 @@ export interface NexusGenFieldTypeNames {
     network: 'Network'
   }
   Ticket: { // field return type name
-    createRedeemTranscation: 'Transcation'
-    createTransferTranscation: 'Transcation'
+    createRedeemTransaction: 'Transaction'
+    createTransferTransaction: 'Transaction'
     event: 'TicketedEvent'
     ticketType: 'TicketType'
   }
@@ -301,7 +301,7 @@ export interface NexusGenFieldTypeNames {
   TicketStub: { // field return type name
     event: 'TicketedEvent'
     name: 'String'
-    orginalTicket: 'Ticket'
+    originalTicket: 'Ticket'
   }
   TicketStubConnection: { // field return type name
     edges: 'TicketStubEdge'
@@ -318,8 +318,8 @@ export interface NexusGenFieldTypeNames {
     tickets: 'TicketConnection'
   }
   TicketedEvent: { // field return type name
-    createAdditionalTickets: 'Transcation'
-    createNewTicketType: 'Transcation'
+    createAdditionalTickets: 'Transaction'
+    createNewTicketType: 'Transaction'
     dateTime: 'Date'
     description: 'String'
     name: 'String'
@@ -328,11 +328,11 @@ export interface NexusGenFieldTypeNames {
     tickets: 'TicketConnection'
     venue: 'String'
   }
-  Transcation: { // field return type name
+  Transaction: { // field return type name
     expectedSigningAddress: 'Address'
-    transcationData: 'String'
+    transactionData: 'String'
   }
-  TranscationResult: { // field return type name
+  TransactionResult: { // field return type name
     result: 'Node'
     status: 'String'
   }
@@ -360,9 +360,9 @@ export interface NexusGenArgTypes {
     }
   }
   Mutation: {
-    submitTranscation: { // args
+    submitTransaction: { // args
       signature?: string | null; // String
-      transcationData?: string | null; // String
+      transactionData?: string | null; // String
     }
   }
   Network: {
@@ -385,7 +385,7 @@ export interface NexusGenArgTypes {
     }
   }
   Ticket: {
-    createTransferTranscation: { // args
+    createTransferTransaction: { // args
       toAddress: string; // String!
     }
   }

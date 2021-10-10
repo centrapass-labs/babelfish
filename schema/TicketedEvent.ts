@@ -53,7 +53,7 @@ export const TicketedEvent = objectType({
     });
     t.field("createNewTicketType", {
       description: "Create a new Ticket Type IE VIP",
-      type: "Transcation",
+      type: "Transaction",
       args: {
         quantity: intArg(),
         ticketType: arg({
@@ -65,7 +65,7 @@ export const TicketedEvent = objectType({
           expectedSigningAddress: {
             address: "5ENzTzH49uZKgYAD1Aa8zCpSfpcub2NkpBewoQgpDa6xkrif",
           },
-          transcationData:
+          transactionData:
             "AF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEF",
         };
       },
@@ -73,7 +73,7 @@ export const TicketedEvent = objectType({
 
     t.field("createAdditionalTickets", {
       description: "Create additional tickets of an existing ticket type",
-      type: "Transcation",
+      type: "Transaction",
       args: {
         quantity: intArg(),
         ticketTypeId: stringArg(),
@@ -83,7 +83,7 @@ export const TicketedEvent = objectType({
           expectedSigningAddress: {
             address: "5ENzTzH49uZKgYAD1Aa8zCpSfpcub2NkpBewoQgpDa6xkrif",
           },
-          transcationData:
+          transactionData:
             "AF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEF",
         };
       },

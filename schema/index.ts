@@ -114,11 +114,11 @@ const Network = objectType({
         };
       },
     });
-    t.field("event", {
+    t.field("ticketedEvent", {
       args: {
         id: nonNull(stringArg()),
       },
-      description: "Get an event via its id.",
+      description: "Get a ticketed event via its id.",
       type: "TicketedEvent",
       resolve() {
         return {

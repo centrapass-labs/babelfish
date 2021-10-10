@@ -85,9 +85,6 @@ type Mutation {
 type Network {
   """Query information about a particular address."""
   address(address: String!): Address
-
-  """Get an event via its id."""
-  event(id: String!): TicketedEvent
   name: String
 
   """Get the nodes in the network."""
@@ -104,6 +101,9 @@ type Network {
     """Returns the last n elements from the list."""
     last: Int
   ): CENNZnetNodeConnection
+
+  """Get a ticketed event via its id."""
+  ticketedEvent(id: String!): TicketedEvent
 }
 
 """The different Ledgers BabelFish can connect to"""

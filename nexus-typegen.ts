@@ -174,9 +174,9 @@ export interface NexusGenFieldTypes {
   }
   Network: { // field return type
     address: NexusGenRootTypes['Address'] | null; // Address
-    event: NexusGenRootTypes['TicketedEvent'] | null; // TicketedEvent
     name: string | null; // String
     nodes: NexusGenRootTypes['CENNZnetNodeConnection'] | null; // CENNZnetNodeConnection
+    ticketedEvent: NexusGenRootTypes['TicketedEvent'] | null; // TicketedEvent
   }
   PageInfo: { // field return type
     endCursor: string | null; // String
@@ -270,9 +270,9 @@ export interface NexusGenFieldTypeNames {
   }
   Network: { // field return type name
     address: 'Address'
-    event: 'TicketedEvent'
     name: 'String'
     nodes: 'CENNZnetNodeConnection'
+    ticketedEvent: 'TicketedEvent'
   }
   PageInfo: { // field return type name
     endCursor: 'String'
@@ -369,14 +369,14 @@ export interface NexusGenArgTypes {
     address: { // args
       address: string; // String!
     }
-    event: { // args
-      id: string; // String!
-    }
     nodes: { // args
       after?: string | null; // String
       before?: string | null; // String
       first?: number | null; // Int
       last?: number | null; // Int
+    }
+    ticketedEvent: { // args
+      id: string; // String!
     }
   }
   Query: {

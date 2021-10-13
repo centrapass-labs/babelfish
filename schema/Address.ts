@@ -1,4 +1,4 @@
-import {arg, objectType, inputObjectType, nonNull, stringArg, intArg} from "nexus";
+import {arg, objectType, inputObjectType, nonNull, stringArg } from "nexus";
 import "../nexus-typegen";
 
 export const TicketedEventDetailsInput = inputObjectType({
@@ -31,7 +31,7 @@ export const Address = objectType({
       description: "List all the Tickets held by this address.",
       additionalArgs: {
         ticketType: stringArg({ description: "If supplied, filters by the specific ticket type"}),
-        eventId: stringArg({ description: "If supplied, filters by the specific event"})
+        event: stringArg({ description: "If supplied, filters by the specific event"})
       },
       totalCount() {
         return 10;

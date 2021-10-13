@@ -26,7 +26,7 @@ export const TicketedEvent = objectType({
     t.string("description", {
       description: "The description of the ticketed event.",
     });
-    t.date("dateTime", { description: "When the event is." });
+    t.date("dateTime", { description: "When the event is in ISO date format." });
     t.field("ticketTypes", {
       description: "The different types of tickets",
       type: list("TicketType"),
@@ -34,6 +34,10 @@ export const TicketedEvent = objectType({
     t.connectionField("tickets", {
       type: "Ticket",
       description: "All the tickets",
+      additionalArgs: {
+        ticketType: stringArg({ description: "If supplied, filters by the specific ticket type"}),
+        address: stringArg({ description: "If supplied, filters by the specified address"}),
+      },
       totalCount() {
         return 10;
       },

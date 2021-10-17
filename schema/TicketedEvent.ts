@@ -35,7 +35,7 @@ export const TicketedEvent = objectType({
       type: "Ticket",
       description: "All the tickets",
       additionalArgs: {
-        ticketType: stringArg({ description: "If supplied, filters by the specific ticket type"}),
+        ticketTypeId: stringArg({ description: "If supplied, filters by the specific ticket type"}),
         address: stringArg({ description: "If supplied, filters by the specified address"}),
       },
       totalCount() {

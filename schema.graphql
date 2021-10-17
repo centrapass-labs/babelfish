@@ -37,11 +37,17 @@ type Address implements Node {
     """Returns the elements in the list that come before the specified cursor"""
     before: String
 
+    """If supplied, filters by the specific event"""
+    event: String
+
     """Returns the first n elements from the list."""
     first: Int
 
     """Returns the last n elements from the list."""
     last: Int
+
+    """If supplied, filters by the specific ticket type"""
+    ticketTypeId: String
   ): TicketConnection
 }
 
@@ -216,6 +222,7 @@ type TicketStubEdge {
 type TicketType {
   """The name of this ticket type: IE 'General Admission'"""
   name: String
+  ticketTypeId: ID
 
   """The event this type is associated with"""
   ticketedEvent: TicketedEvent
@@ -250,7 +257,7 @@ type TicketedEvent {
   """Create a new Ticket Type IE VIP"""
   createNewTicketType(quantity: Int, ticketType: TicketTypeInput): Transaction
 
-  """When the event is."""
+  """When the event is in ISO date format."""
   dateTime: Date
 
   """The description of the ticketed event."""
@@ -279,6 +286,9 @@ type TicketedEvent {
 
   """All the tickets"""
   tickets(
+    """If supplied, filters by the specified address"""
+    address: String
+
     """Returns the elements in the list that come after the specified cursor"""
     after: String
 
@@ -290,6 +300,9 @@ type TicketedEvent {
 
     """Returns the last n elements from the list."""
     last: Int
+
+    """If supplied, filters by the specific ticket type"""
+    ticketTypeId: String
   ): TicketConnection
 
   """The Venue of the ticket event."""
@@ -298,7 +311,7 @@ type TicketedEvent {
 
 """The details of your event."""
 input TicketedEventDetailsInput {
-  """The date and time of the event."""
+  """The date and time of the event in ISO date format."""
   dateTime: Date
 
   """The description of the event. IE Fun on an Island"""

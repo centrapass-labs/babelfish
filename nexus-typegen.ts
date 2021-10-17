@@ -120,6 +120,7 @@ export interface NexusGenObjects {
   }
   TicketType: { // root type
     name?: string | null; // String
+    ticketTypeId?: string | null; // ID
     ticketedEvent?: NexusGenRootTypes['TicketedEvent'] | null; // TicketedEvent
   }
   TicketedEvent: { // root type
@@ -218,6 +219,7 @@ export interface NexusGenFieldTypes {
   }
   TicketType: { // field return type
     name: string | null; // String
+    ticketTypeId: string | null; // ID
     ticketedEvent: NexusGenRootTypes['TicketedEvent'] | null; // TicketedEvent
     tickets: NexusGenRootTypes['TicketConnection'] | null; // TicketConnection
   }
@@ -314,6 +316,7 @@ export interface NexusGenFieldTypeNames {
   }
   TicketType: { // field return type name
     name: 'String'
+    ticketTypeId: 'ID'
     ticketedEvent: 'TicketedEvent'
     tickets: 'TicketConnection'
   }
@@ -355,8 +358,10 @@ export interface NexusGenArgTypes {
     tickets: { // args
       after?: string | null; // String
       before?: string | null; // String
+      event?: string | null; // String
       first?: number | null; // Int
       last?: number | null; // Int
+      ticketTypeId?: string | null; // String
     }
   }
   Mutation: {
@@ -413,10 +418,12 @@ export interface NexusGenArgTypes {
       last?: number | null; // Int
     }
     tickets: { // args
+      address?: string | null; // String
       after?: string | null; // String
       before?: string | null; // String
       first?: number | null; // Int
       last?: number | null; // Int
+      ticketTypeId?: string | null; // String
     }
   }
 }

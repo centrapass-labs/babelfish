@@ -5,6 +5,7 @@ export const TicketType = objectType({
   name: "TicketType",
   description: "The type of a ticket IE General Admission, VIP, etc",
   definition(t) {
+    t.id("ticketTypeId");
     t.string("name", {
       description: "The name of this ticket type: IE 'General Admission'",
     });
@@ -14,7 +15,7 @@ export const TicketType = objectType({
     });
     t.connectionField("tickets", {
       type: "Ticket",
-      description: "The tickets associated with this type.",
+      description: "The tickets associated with this ticket type.",
 
       totalCount() {
         return 10;

@@ -97,6 +97,7 @@ const Transaction = objectType({
   },
 });
 
+
 const Network = objectType({
   name: "Network",
   description: "A Network/Ledger",

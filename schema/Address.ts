@@ -30,7 +30,7 @@ export const Address = objectType({
       type: "Ticket",
       description: "List all the Tickets held by this address.",
       additionalArgs: {
-        ticketType: stringArg({ description: "If supplied, filters by the specific ticket type"}),
+        ticketTypeId: stringArg({ description: "If supplied, filters by the specific ticket type"}),
         event: stringArg({ description: "If supplied, filters by the specific event"})
       },
       totalCount() {

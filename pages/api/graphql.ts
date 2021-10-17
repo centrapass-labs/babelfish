@@ -25,6 +25,7 @@ const cors = initMiddleware(
 const apolloServer = new ApolloServer({
   schema,
   introspection: true,
+  mocks: true,
   plugins: [ApolloServerPluginLandingPageLocalDefault],
 });
 

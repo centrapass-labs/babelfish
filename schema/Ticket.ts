@@ -15,7 +15,7 @@ export const TicketType = objectType({
     });
     t.connectionField("tickets", {
       type: "Ticket",
-      description: "The tickets associated with this type.",
+      description: "The tickets associated with this ticket type.",
 
       totalCount() {
         return 10;

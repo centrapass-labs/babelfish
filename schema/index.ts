@@ -97,6 +97,13 @@ const Transaction = objectType({
   },
 });
 
+const Health = objectType({
+  name: "Health",
+  description: "Check the health status of Babelfish",
+  definition(t) {
+    t.string("status");
+  },
+});
 
 const Network = objectType({
   name: "Network",
@@ -143,6 +150,14 @@ const Network = objectType({
 
 const Query = queryType({
   definition(t) {
+    t.field("health", {
+      type: Health,
+      resolve() {
+        return {
+          status: "OK",
+        };
+      },
+    });
     t.field("network", {
       type: Network,
       args: {

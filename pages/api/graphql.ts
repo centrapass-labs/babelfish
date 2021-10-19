@@ -2,6 +2,8 @@ import { ApolloServer } from "apollo-server-micro";
 import { NextApiRequest, NextApiResponse } from "next";
 import Cors from "cors";
 import schema from "../../schema";
+import { mockAPI } from "./mocks";
+
 import { ApolloServerPluginLandingPageLocalDefault } from "apollo-server-core";
 
 function initMiddleware(middleware: any) {
@@ -25,7 +27,7 @@ const cors = initMiddleware(
 const apolloServer = new ApolloServer({
   schema,
   introspection: true,
-  mocks: true,
+  mocks: mockAPI,
   plugins: [ApolloServerPluginLandingPageLocalDefault],
 });
 

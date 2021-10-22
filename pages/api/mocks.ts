@@ -14,5 +14,6 @@ export const mockAPI = {
     ID: () => faker.datatype.uuid(),
     Int: () => faker.datatype.number({ min :1, max: 200 }),
     String: () => faker.datatype.string(),
-    Boolean : () => faker.datatype.boolean()
+    Boolean : () => faker.datatype.boolean(),
+    Date : () => faker.datatype.datetime()
 };

@@ -80,6 +80,9 @@ export interface NexusGenObjects {
     cursor: string; // String!
     node?: NexusGenRootTypes['CENNZnetNode'] | null; // CENNZnetNode
   }
+  Health: { // root type
+    status?: string | null; // String
+  }
   Mutation: {};
   Network: { // root type
     name?: string | null; // String
@@ -170,6 +173,9 @@ export interface NexusGenFieldTypes {
     cursor: string; // String!
     node: NexusGenRootTypes['CENNZnetNode'] | null; // CENNZnetNode
   }
+  Health: { // field return type
+    status: string | null; // String
+  }
   Mutation: { // field return type
     submitTransaction: NexusGenRootTypes['TransactionResult']; // TransactionResult!
   }
@@ -186,6 +192,7 @@ export interface NexusGenFieldTypes {
     startCursor: string | null; // String
   }
   Query: { // field return type
+    health: NexusGenRootTypes['Health'] | null; // Health
     network: NexusGenRootTypes['Network'] | null; // Network
   }
   Ticket: { // field return type
@@ -267,6 +274,9 @@ export interface NexusGenFieldTypeNames {
     cursor: 'String'
     node: 'CENNZnetNode'
   }
+  Health: { // field return type name
+    status: 'String'
+  }
   Mutation: { // field return type name
     submitTransaction: 'TransactionResult'
   }
@@ -283,6 +293,7 @@ export interface NexusGenFieldTypeNames {
     startCursor: 'String'
   }
   Query: { // field return type name
+    health: 'Health'
     network: 'Network'
   }
   Ticket: { // field return type name

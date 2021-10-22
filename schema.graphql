@@ -82,6 +82,11 @@ A date string, such as 2007-12-03, compliant with the `full-date` format outline
 """
 scalar Date
 
+"""Check the health status of Babelfish"""
+type Health {
+  status: String
+}
+
 type Mutation {
   """Used to submit a transaction to the blockchain"""
   submitTransaction(signature: String, transactionData: String): TransactionResult!
@@ -148,6 +153,7 @@ type PageInfo {
 }
 
 type Query {
+  health: Health
   network(network: NetworkEnum!): Network
 }
 
@@ -227,7 +233,7 @@ type TicketType {
   """The event this type is associated with"""
   ticketedEvent: TicketedEvent
 
-  """The tickets associated with this type."""
+  """The tickets associated with this ticket type."""
   tickets(
     """Returns the elements in the list that come after the specified cursor"""
     after: String

@@ -20,6 +20,7 @@ import * as Ticket from "./Ticket";
 import * as Address from "./Address";
 
 import { GraphQLDate } from "graphql-iso-date";
+import { createGlobalId } from "../entities/entityHelpers";
 
 /*
 TODO: 
@@ -80,7 +81,7 @@ const CENNZNode = objectType({
 const NetworkEnum = enumType({
   name: "NetworkEnum",
   description: "The different Ledgers BabelFish can connect to",
-  members: ["CENNZnet_Nikau"],
+  members: ["CENNZnet_Nikau", "Mock", "CENNZnet_Rata", ""],
 });
 
 const Transaction = objectType({
@@ -165,10 +166,14 @@ const Query = queryType({
           type: nonNull(NetworkEnum),
         }),
       },
-      resolve() {
-        return {
-          name: "CENNZnet_Nikau",
-        };
+      resolve(_, args, { instance }) {
+        return instance.load.Network(
+          createGlobalId({
+            __id: "",
+            __network: args.network,
+            __type: "Network",
+          })
+        );
       },
     });
   },
@@ -196,6 +201,10 @@ export default makeSchema({
       },
     }),
   ],
+  contextType: {
+    module: require.resolve("./context"),
+    export: "Context",
+  },
   outputs: __dirname
     ? {
         typegen: join(__dirname, "..", "nexus-typegen.ts"),

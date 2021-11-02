@@ -4,6 +4,7 @@
  */
 
 
+import type { Context } from "./schema/context"
 import type { core, connectionPluginCore } from "nexus"
 declare global {
   interface NexusGenCustomInputMethods<TypeName extends string> {
@@ -51,7 +52,7 @@ export interface NexusGenInputs {
 }
 
 export interface NexusGenEnums {
-  NetworkEnum: "CENNZnet_Nikau"
+  NetworkEnum: "" | "CENNZnet_Nikau" | "CENNZnet_Rata" | "Mock"
 }
 
 export interface NexusGenScalars {
@@ -472,7 +473,7 @@ export type NexusGenFeaturesConfig = {
 }
 
 export interface NexusGenTypes {
-  context: any;
+  context: Context;
   inputTypes: NexusGenInputs;
   rootTypes: NexusGenRootTypes;
   inputTypeShapes: NexusGenInputs & NexusGenEnums & NexusGenScalars;

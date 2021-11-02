@@ -119,7 +119,10 @@ type Network {
 
 """The different Ledgers BabelFish can connect to"""
 enum NetworkEnum {
+  
   CENNZnet_Nikau
+  CENNZnet_Rata
+  Mock
 }
 
 interface Node {

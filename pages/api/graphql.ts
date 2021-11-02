@@ -6,6 +6,8 @@ import { mockAPI } from "./mocks";
 
 import { ApolloServerPluginLandingPageLocalDefault } from "apollo-server-core";
 
+// TODO: proper Error Handling.
+
 function initMiddleware(middleware: any) {
   return (req: NextApiRequest, res: NextApiResponse) =>
     new Promise((resolve, reject) => {

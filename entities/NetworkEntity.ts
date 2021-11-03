@@ -3,7 +3,11 @@ import NetworkComponent from "./NetworkComponent";
 
 const NetworkEntity = defineEntity(NetworkComponent, {
   __type: "Network",
-  capability: {},
+  capability: {
+    async name() {
+      return this.__network;
+    },
+  },
 });
 
 export default NetworkEntity;

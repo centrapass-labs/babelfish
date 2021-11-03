@@ -1,9 +1,10 @@
+import { enumType } from "nexus";
 import { NexusGenEnums } from "../nexus-typegen";
 
 declare const globalIdSymbol: unique symbol;
 declare const globalIdNetworkSymbol: unique symbol;
 
-type GlobalId<
+export type GlobalId<
   N extends NexusGenEnums["NetworkEnum"],
   T extends string
 > = string & { [globalIdSymbol]: T; [globalIdNetworkSymbol]: N };
@@ -11,14 +12,14 @@ type GlobalId<
 type GlobalIdInfo<N extends NexusGenEnums["NetworkEnum"], T extends string> = {
   __network: N;
   __type: T;
-  __id: string;
+  __localId: string;
 };
 
 export function createGlobalId<
   N extends NexusGenEnums["NetworkEnum"],
   T extends string
 >(i: GlobalIdInfo<N, T>): GlobalId<N, T> {
-  return Buffer.from(`${i.__network}:${i.__type}:${i.__id}`).toString(
+  return Buffer.from(`${i.__network}:${i.__type}:${i.__localId}`).toString(
     "base64"
   ) as any;
 }
@@ -31,15 +32,15 @@ export function getGlobalIdInfo<
 ): {
   __network: N;
   __type: T;
-  __id: string;
+  __localId: string;
 } {
-  const [network, type, localId] = Buffer.from(i, "base64")
+  const [__network, __type, __localId] = Buffer.from(i, "base64")
     .toString("utf8")
     .split(":");
   return {
-    network,
-    type,
-    localId,
+    __network,
+    __type,
+    __localId,
   } as any;
 }
 
@@ -80,13 +81,16 @@ type Component<N extends string, TC extends {}> =
   | DefinedComponent<TC, any>
   | AnonymousComponent<N, TC>;
 
+type Entity<N extends string, TC extends {}> = DefinedComponent<TC, any> &
+  AnonymousComponent<N, TC>;
+
 export function defineEntity<N extends string, A extends Component<N, {}>>(
   a: A
 ): A;
 export function defineEntity<
   N extends string,
   A extends Component<N, {}>,
-  B extends Component<N, A["capability"]>
+  B extends AnonymousComponent<N, A["capability"]>
 >(a: A, b: B): A & B;
 export function defineEntity<
   N extends string,
@@ -94,7 +98,21 @@ export function defineEntity<
   B extends Component<N, A["capability"]>,
   C extends AnonymousComponent<N, A["capability"] & B["capability"]>
 >(a: A, b: B, c: C): A & B & C;
-export function defineEntity<C extends any[]>(...cap: C): any {}
+export function defineEntity<C extends any[]>(...cap: C): any {
+  return cap.reduce(
+    (ent, comp) => ({
+      ...ent,
+      ...comp,
+      capability: {
+        ...ent.capability,
+        ...comp.capability,
+      },
+      cacheKey: null,
+      __component: null,
+    }),
+    {}
+  );
+}
 
 export function defineComponent<
   REQ extends { [key: string]: (...args: any) => any },
@@ -130,7 +148,7 @@ type FindAllTypes<L extends Component<any, any>[]> = L[number] extends {
   ? L[number]["__type"]
   : never;
 
-export function createWorldInstance<E extends Component<any, any>[]>(
+export function createWorldInstance<E extends Entity<any, any>[]>(
   persistentCache: Object,
   entities: E
 ): {
@@ -143,5 +161,45 @@ export function createWorldInstance<E extends Component<any, any>[]>(
     ) => ExposedEntity<K, FindType<E, K>>;
   };
 } {
-  return {} as any;
+  const load: {
+    [key: string]: (id: GlobalId<any, any>) => ExposedEntity<any, any>;
+  } = {};
+  console.log("WHY", entities);
+  entities.forEach((entity) => {
+    load[entity.__type] = (id: GlobalId<any, any>) => {
+      const { __type, __localId, __network } = getGlobalIdInfo(id);
+      console.log(__type);
+      if (__type !== entity.__type) {
+        throw Error(
+          "This global ID is of the wrong type -- " +
+            __type +
+            " -- " +
+            entity.__type +
+            " -- " +
+            id
+        );
+      }
+      const entityInstance = {
+        id,
+        __type,
+        __localId,
+        __network,
+      } as any;
+      console.log("YEET", entityInstance);
+      Object.entries(entity.capability).forEach(([key, value]) => {
+        entityInstance[key] = (...args: any[]) =>
+          value.bind(entityInstance)(...args);
+      });
+
+      return entityInstance;
+    };
+  });
+
+  return {
+    load,
+    loadEntity: (id: GlobalId<any, any>) => {
+      const { __type } = getGlobalIdInfo(id);
+      return load[__type](id);
+    },
+  } as any;
 }

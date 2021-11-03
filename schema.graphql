@@ -93,9 +93,12 @@ type Mutation {
 }
 
 """A Network/Ledger"""
-type Network {
+type Network implements Node {
   """Query information about a particular address."""
   address(address: String!): Address
+
+  """Unique identifier for the resource"""
+  id: ID
   name: String
 
   """Get the nodes in the network."""
@@ -119,7 +122,6 @@ type Network {
 
 """The different Ledgers BabelFish can connect to"""
 enum NetworkEnum {
-  
   CENNZnet_Nikau
   CENNZnet_Rata
   Mock

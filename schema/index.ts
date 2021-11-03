@@ -20,7 +20,11 @@ import * as Ticket from "./Ticket";
 import * as Address from "./Address";
 
 import { GraphQLDate } from "graphql-iso-date";
-import { createGlobalId } from "../entities/entityHelpers";
+import {
+  createGlobalId,
+  getGlobalIdInfo,
+  GlobalId,
+} from "../entities/entityHelpers";
 
 /*
 TODO: 
@@ -81,7 +85,7 @@ const CENNZNode = objectType({
 const NetworkEnum = enumType({
   name: "NetworkEnum",
   description: "The different Ledgers BabelFish can connect to",
-  members: ["CENNZnet_Nikau", "Mock", "CENNZnet_Rata", ""],
+  members: ["CENNZnet_Nikau", "Mock", "CENNZnet_Rata"],
 });
 
 const Transaction = objectType({
@@ -110,6 +114,7 @@ const Network = objectType({
   name: "Network",
   description: "A Network/Ledger",
   definition(t) {
+    t.implements(Node);
     t.string("name");
     t.field("address", {
       type: "Address",
@@ -117,10 +122,17 @@ const Network = objectType({
       args: {
         address: nonNull(stringArg()),
       },
-      resolve(parent, args) {
-        return {
-          address: args.address,
-        };
+      resolve(parent, args, { instance }) {
+        const { __network } = getGlobalIdInfo(
+          parent.id as GlobalId<any, "Network">
+        );
+        return instance.load.Address(
+          createGlobalId({
+            __localId: args.address,
+            __network: __network,
+            __type: "Address",
+          })
+        ) as any;
       },
     });
     t.field("ticketedEvent", {
@@ -169,11 +181,11 @@ const Query = queryType({
       resolve(_, args, { instance }) {
         return instance.load.Network(
           createGlobalId({
-            __id: "",
+            __localId: "",
             __network: args.network,
             __type: "Network",
           })
-        );
+        ) as any;
       },
     });
   },
@@ -201,10 +213,12 @@ export default makeSchema({
       },
     }),
   ],
-  contextType: {
-    module: require.resolve("./context"),
-    export: "Context",
-  },
+  contextType: __dirname
+    ? {
+        module: require.resolve("./context"),
+        export: "Context",
+      }
+    : undefined,
   outputs: __dirname
     ? {
         typegen: join(__dirname, "..", "nexus-typegen.ts"),

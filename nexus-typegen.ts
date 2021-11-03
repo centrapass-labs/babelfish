@@ -52,7 +52,7 @@ export interface NexusGenInputs {
 }
 
 export interface NexusGenEnums {
-  NetworkEnum: "" | "CENNZnet_Nikau" | "CENNZnet_Rata" | "Mock"
+  NetworkEnum: "CENNZnet_Nikau" | "CENNZnet_Rata" | "Mock"
 }
 
 export interface NexusGenScalars {
@@ -86,6 +86,7 @@ export interface NexusGenObjects {
   }
   Mutation: {};
   Network: { // root type
+    id?: string | null; // ID
     name?: string | null; // String
   }
   PageInfo: { // root type
@@ -144,7 +145,7 @@ export interface NexusGenObjects {
 }
 
 export interface NexusGenInterfaces {
-  Node: NexusGenRootTypes['Address'];
+  Node: NexusGenRootTypes['Address'] | NexusGenRootTypes['Network'];
 }
 
 export interface NexusGenUnions {
@@ -182,6 +183,7 @@ export interface NexusGenFieldTypes {
   }
   Network: { // field return type
     address: NexusGenRootTypes['Address'] | null; // Address
+    id: string | null; // ID
     name: string | null; // String
     nodes: NexusGenRootTypes['CENNZnetNodeConnection'] | null; // CENNZnetNodeConnection
     ticketedEvent: NexusGenRootTypes['TicketedEvent'] | null; // TicketedEvent
@@ -283,6 +285,7 @@ export interface NexusGenFieldTypeNames {
   }
   Network: { // field return type name
     address: 'Address'
+    id: 'ID'
     name: 'String'
     nodes: 'CENNZnetNodeConnection'
     ticketedEvent: 'TicketedEvent'
@@ -441,11 +444,12 @@ export interface NexusGenArgTypes {
 }
 
 export interface NexusGenAbstractTypeMembers {
-  Node: "Address"
+  Node: "Address" | "Network"
 }
 
 export interface NexusGenTypeInterfaces {
   Address: "Node"
+  Network: "Node"
 }
 
 export type NexusGenObjectNames = keyof NexusGenObjects;

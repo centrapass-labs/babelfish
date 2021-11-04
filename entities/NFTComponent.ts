@@ -15,13 +15,13 @@ const NFTComponent = defineComponent<
 >({
   __component: "NFT",
   cacheKey() {
-    return this.__id + this.__network;
+    return this.__localId + this.__network;
   },
   capability: {
     async tokenOwner() {
       const api = await this.apiConnector();
       // tokenOwner((CollectionId,SeriesId), SerialNumber)
-      const owner = await api.query.nft.tokenOwner(this.__id);
+      const owner = await api.query.nft.tokenOwner(this.__localId);
       return {
         address: owner.toString(),
       };
@@ -30,7 +30,7 @@ const NFTComponent = defineComponent<
       const api = await this.apiConnector();
       const tokenOwner = await this.tokenOwner();
       return {
-        transcationData: api.tx.nft.transfer(this.__id, toAddress).toHex(),
+        transcationData: api.tx.nft.transfer(this.__localId, toAddress).toHex(),
         expectedSigningAddress: tokenOwner,
       };
     },

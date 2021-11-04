@@ -322,17 +322,8 @@ type TicketedEvent {
 
 """The details of your event."""
 input TicketedEventDetailsInput {
-  """The date and time of the event in ISO date format."""
-  dateTime: Date
-
-  """The description of the event. IE Fun on an Island"""
-  description: String
-
   """The name of the event. IE My Festival"""
   name: String!
-
-  """The venue for the event. IE On an Island"""
-  venue: String
 }
 
 type Transaction {

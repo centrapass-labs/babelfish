@@ -44,10 +44,7 @@ export interface NexusGenInputs {
     name: string; // String!
   }
   TicketedEventDetailsInput: { // input type
-    dateTime?: NexusGenScalars['Date'] | null; // Date
-    description?: string | null; // String
     name: string; // String!
-    venue?: string | null; // String
   }
 }
 

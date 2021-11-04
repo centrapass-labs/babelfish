@@ -4,5 +4,9 @@ import TicketEntity from "./TicketEntity";
 import AddressEntity from "./AddressEntity";
 
 export function createInstance() {
-  return createWorldInstance({}, [TicketEntity, NetworkEntity, AddressEntity]);
+  return createWorldInstance({}, [
+    TicketEntity as any,
+    NetworkEntity,
+    AddressEntity,
+  ]);
 }

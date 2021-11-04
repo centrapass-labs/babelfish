@@ -20,7 +20,7 @@ const NetworkComponent = defineComponent<
       }
       if (!networkStore[this.__network]) {
         networkStore[this.__network] = Api.create({
-          provider: "wss://nikau.centrality.me/public/ws", // ENV for url.
+          provider: "wss://cennznet.unfrastructure.io/public/wss", // ENV for url.
         });
       }
       return networkStore[this.__network];

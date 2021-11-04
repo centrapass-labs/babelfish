@@ -11,7 +11,7 @@ const AddresssEntity = defineEntity(NetworkComponent, {
       const api = await this.apiConnector();
       return {
         expectedSigningAddress: { address: this.__localId },
-        transactionData: api.tx.nft.createCollection(name).toHex(),
+        transactionData: api.tx.nft.createCollection(name, null, null).toHex(),
       };
     },
   },

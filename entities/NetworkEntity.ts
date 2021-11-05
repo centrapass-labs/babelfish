@@ -5,7 +5,8 @@ const NetworkEntity = defineEntity(NetworkComponent, {
   __type: "Network",
   capability: {
     async name() {
-      return this.__network;
+      const api = await this.apiConnector();
+      return api.rpc.system.chain();
     },
   },
 });

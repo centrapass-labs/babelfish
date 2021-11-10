@@ -89,7 +89,7 @@ type Health {
 
 type Mutation {
   """Used to submit a transaction to the blockchain"""
-  submitTransaction(signature: String, transactionData: String): TransactionResult!
+  submitTransaction(signature: String, transcationId: ID!): TransactionResult!
 }
 
 """A Network/Ledger"""
@@ -122,6 +122,7 @@ type Network implements Node {
 
 """The different Ledgers BabelFish can connect to"""
 enum NetworkEnum {
+  CENNZnet_Azalea
   CENNZnet_Nikau
   CENNZnet_Rata
   Mock
@@ -326,14 +327,17 @@ input TicketedEventDetailsInput {
   name: String!
 }
 
-type Transaction {
+type Transaction implements Node {
   """
   The address we except the transaction to be signed with to get the desired results.
   """
   expectedSigningAddress: Address
 
+  """Unique identifier for the resource"""
+  id: ID
+
   """The transaction data hex encoded."""
-  transactionData: String
+  signerPayload: String
 }
 
 type TransactionResult {

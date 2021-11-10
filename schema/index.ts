@@ -10,6 +10,7 @@ import {
   connectionPlugin,
   asNexusMethod,
   extendType,
+  idArg,
 } from "nexus";
 import { join } from "path";
 import "../nexus-typegen";
@@ -50,9 +51,7 @@ const Node = interfaceType({
 const TransactionResult = objectType({
   name: "TransactionResult",
   definition(t) {
-    t.string("status", {
-      resolve: () => "Success",
-    });
+    t.string("status");
     t.field("result", { type: Node });
   },
 });
@@ -64,11 +63,77 @@ const Mutation = extendType({
       description: "Used to submit a transaction to the blockchain",
       type: TransactionResult,
       args: {
-        transactionData: stringArg(),
+        transcationId: nonNull(idArg()),
         signature: stringArg(),
       },
-      resolve(_root, args, ctx) {
-        return {};
+      async resolve(_root, args, { instance }) {
+        const { __network, __type } = getGlobalIdInfo(
+          args.transcationId as GlobalId<any, any>
+        );
+
+        if (__type !== "Transaction") {
+          throw new Error("Transaction ID isn't a Transaction ID");
+        }
+
+        const api = await instance.load
+          .Network(
+            createGlobalId({
+              __localId: "",
+              __network,
+              __type: "Network",
+            })
+          )
+          .apiConnector();
+
+        if (!args.transcationId) {
+          throw new Error("");
+        }
+
+        const signerPayload = api.registry.createType(
+          "SignerPayload",
+          Buffer.from(
+            args.transcationId.replace(
+              Buffer.from(`${__network}:Transaction:`).toString("base64url"),
+
+              ""
+            ),
+            "base64url"
+          ),
+          { version: api.extrinsicVersion }
+        );
+
+        const extrinsic = api.registry.createType(
+          "Extrinsic",
+          { method: signerPayload.method },
+          { version: api.extrinsicVersion }
+        );
+
+        extrinsic.addSignature(
+          signerPayload.address,
+          args.signature,
+          signerPayload.toPayload()
+        );
+
+        return Promise.race([
+          new Promise((resolve) => {
+            api.rpc.author.submitAndWatchExtrinsic(extrinsic, (result: any) => {
+              console.log(JSON.stringify(result.toHuman(), null, 2));
+              console.log(result);
+              const done =
+                result.toHuman().InBlock || result.toHuman().Finalized;
+              if (done) {
+                console.log("DONE");
+                resolve({
+                  status: `${done}`,
+                  result: null,
+                });
+              }
+            });
+          }),
+          new Promise((cb) =>
+            setTimeout(() => cb({ status: "pending", result: null }), 15000)
+          ),
+        ]) as any;
       },
     });
   },
@@ -85,13 +150,14 @@ const CENNZNode = objectType({
 const NetworkEnum = enumType({
   name: "NetworkEnum",
   description: "The different Ledgers BabelFish can connect to",
-  members: ["CENNZnet_Nikau", "Mock", "CENNZnet_Rata"],
+  members: ["CENNZnet_Azalea", "CENNZnet_Nikau", "Mock", "CENNZnet_Rata"],
 });
 
 const Transaction = objectType({
   name: "Transaction",
   definition(t) {
-    t.string("transactionData", {
+    t.implements("Node");
+    t.string("signerPayload", {
       description: "The transaction data hex encoded.",
     });
     t.field("expectedSigningAddress", {

@@ -49,7 +49,7 @@ export interface NexusGenInputs {
 }
 
 export interface NexusGenEnums {
-  NetworkEnum: "CENNZnet_Nikau" | "CENNZnet_Rata" | "Mock"
+  NetworkEnum: "CENNZnet_Azalea" | "CENNZnet_Nikau" | "CENNZnet_Rata" | "Mock"
 }
 
 export interface NexusGenScalars {
@@ -134,15 +134,17 @@ export interface NexusGenObjects {
   }
   Transaction: { // root type
     expectedSigningAddress?: NexusGenRootTypes['Address'] | null; // Address
-    transactionData?: string | null; // String
+    id?: string | null; // ID
+    signerPayload?: string | null; // String
   }
   TransactionResult: { // root type
     result?: NexusGenRootTypes['Node'] | null; // Node
+    status?: string | null; // String
   }
 }
 
 export interface NexusGenInterfaces {
-  Node: NexusGenRootTypes['Address'] | NexusGenRootTypes['Network'];
+  Node: NexusGenRootTypes['Address'] | NexusGenRootTypes['Network'] | NexusGenRootTypes['Transaction'];
 }
 
 export interface NexusGenUnions {
@@ -243,7 +245,8 @@ export interface NexusGenFieldTypes {
   }
   Transaction: { // field return type
     expectedSigningAddress: NexusGenRootTypes['Address'] | null; // Address
-    transactionData: string | null; // String
+    id: string | null; // ID
+    signerPayload: string | null; // String
   }
   TransactionResult: { // field return type
     result: NexusGenRootTypes['Node'] | null; // Node
@@ -345,7 +348,8 @@ export interface NexusGenFieldTypeNames {
   }
   Transaction: { // field return type name
     expectedSigningAddress: 'Address'
-    transactionData: 'String'
+    id: 'ID'
+    signerPayload: 'String'
   }
   TransactionResult: { // field return type name
     result: 'Node'
@@ -379,7 +383,7 @@ export interface NexusGenArgTypes {
   Mutation: {
     submitTransaction: { // args
       signature?: string | null; // String
-      transactionData?: string | null; // String
+      transcationId: string; // ID!
     }
   }
   Network: {
@@ -441,12 +445,13 @@ export interface NexusGenArgTypes {
 }
 
 export interface NexusGenAbstractTypeMembers {
-  Node: "Address" | "Network"
+  Node: "Address" | "Network" | "Transaction"
 }
 
 export interface NexusGenTypeInterfaces {
   Address: "Node"
   Network: "Node"
+  Transaction: "Node"
 }
 
 export type NexusGenObjectNames = keyof NexusGenObjects;

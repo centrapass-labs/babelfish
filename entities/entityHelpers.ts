@@ -34,7 +34,7 @@ export function getGlobalIdInfo<
   __type: T;
   __localId: string;
 } {
-  const [__network, __type, __localId] = Buffer.from(i, "base64")
+  const [__network, __type, __localId] = Buffer.from(i, "base64url")
     .toString("utf8")
     .split(":");
   return {
@@ -164,7 +164,6 @@ export function createWorldInstance<E extends Entity<any, any>[]>(
   const load: {
     [key: string]: (id: GlobalId<any, any>) => ExposedEntity<any, any>;
   } = {};
-  console.log("WHY", entities);
   entities.forEach((entity) => {
     load[entity.__type] = (id: GlobalId<any, any>) => {
       const { __type, __localId, __network } = getGlobalIdInfo(id);
@@ -185,7 +184,6 @@ export function createWorldInstance<E extends Entity<any, any>[]>(
         __localId,
         __network,
       } as any;
-      console.log("YEET", entityInstance);
       Object.entries(entity.capability).forEach(([key, value]) => {
         entityInstance[key] = (...args: any[]) =>
           value.bind(entityInstance)(...args);

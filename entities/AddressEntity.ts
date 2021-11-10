@@ -9,10 +9,11 @@ const AddresssEntity = defineEntity(NetworkComponent, {
     },
     async createTicketedEvent({ name }: { name: string }) {
       const api = await this.apiConnector();
-      return {
-        expectedSigningAddress: { address: this.__localId },
-        transactionData: api.tx.nft.createCollection(name, null, null).toHex(),
-      };
+      const unsigned = api.tx.nft.createCollection(name, null, null);
+      return this.createTransaction({
+        address: this.__localId,
+        extrinsic: unsigned,
+      });
     },
   },
 });

@@ -89,13 +89,16 @@ type Health {
 
 type Mutation {
   """Used to submit a transaction to the blockchain"""
-  submitTransaction(signature: String, transactionData: String): TransactionResult!
+  submitTransaction(signature: String, transactionId: ID!): TransactionResult!
 }
 
 """A Network/Ledger"""
-type Network {
+type Network implements Node {
   """Query information about a particular address."""
   address(address: String!): Address
+
+  """Unique identifier for the resource"""
+  id: ID
   name: String
 
   """Get the nodes in the network."""
@@ -119,7 +122,10 @@ type Network {
 
 """The different Ledgers BabelFish can connect to"""
 enum NetworkEnum {
+  CENNZnet_Azalea
   CENNZnet_Nikau
+  CENNZnet_Rata
+  Mock
 }
 
 interface Node {
@@ -317,27 +323,21 @@ type TicketedEvent {
 
 """The details of your event."""
 input TicketedEventDetailsInput {
-  """The date and time of the event in ISO date format."""
-  dateTime: Date
-
-  """The description of the event. IE Fun on an Island"""
-  description: String
-
   """The name of the event. IE My Festival"""
   name: String!
-
-  """The venue for the event. IE On an Island"""
-  venue: String
 }
 
-type Transaction {
+type Transaction implements Node {
   """
   The address we except the transaction to be signed with to get the desired results.
   """
   expectedSigningAddress: Address
 
+  """Unique identifier for the resource"""
+  id: ID
+
   """The transaction data hex encoded."""
-  transactionData: String
+  signerPayload: String
 }
 
 type TransactionResult {

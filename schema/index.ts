@@ -10,6 +10,7 @@ import {
   connectionPlugin,
   asNexusMethod,
   extendType,
+  idArg,
 } from "nexus";
 import { join } from "path";
 import "../nexus-typegen";
@@ -20,6 +21,11 @@ import * as Ticket from "./Ticket";
 import * as Address from "./Address";
 
 import { GraphQLDate } from "graphql-iso-date";
+import {
+  createGlobalId,
+  getGlobalIdInfo,
+  GlobalId,
+} from "../entities/entityHelpers";
 
 /*
 TODO: 
@@ -45,9 +51,7 @@ const Node = interfaceType({
 const TransactionResult = objectType({
   name: "TransactionResult",
   definition(t) {
-    t.string("status", {
-      resolve: () => "Success",
-    });
+    t.string("status");
     t.field("result", { type: Node });
   },
 });
@@ -59,11 +63,74 @@ const Mutation = extendType({
       description: "Used to submit a transaction to the blockchain",
       type: TransactionResult,
       args: {
-        transactionData: stringArg(),
+        transactionId: nonNull(idArg()),
         signature: stringArg(),
       },
-      resolve(_root, args, ctx) {
-        return {};
+      async resolve(_root, args, { instance }) {
+        const { __network, __type } = getGlobalIdInfo(
+          args.transactionId as GlobalId<any, any>
+        );
+
+        if (__type !== "Transaction") {
+          throw new Error("Transaction ID isn't a Transaction ID");
+        }
+
+        const api = await instance.load
+          .Network(
+            createGlobalId({
+              __localId: "",
+              __network,
+              __type: "Network",
+            })
+          )
+          .apiConnector();
+
+        if (!args.transactionId) {
+          throw new Error("");
+        }
+
+        const signerPayload = api.registry.createType(
+          "SignerPayload",
+          Buffer.from(
+            args.transactionId.replace(
+              Buffer.from(`${__network}:Transaction:`).toString("base64url"),
+
+              ""
+            ),
+            "base64url"
+          ),
+          { version: api.extrinsicVersion }
+        );
+
+        const extrinsic = api.registry.createType(
+          "Extrinsic",
+          { method: signerPayload.method },
+          { version: api.extrinsicVersion }
+        );
+
+        extrinsic.addSignature(
+          signerPayload.address,
+          args.signature,
+          signerPayload.toPayload()
+        );
+
+        return Promise.race([
+          new Promise((resolve) => {
+            api.rpc.author.submitAndWatchExtrinsic(extrinsic, (result: any) => {
+              const done =
+                result.toHuman().InBlock || result.toHuman().Finalized;
+              if (done) {
+                resolve({
+                  status: `${done}`,
+                  result: null,
+                });
+              }
+            });
+          }),
+          new Promise((cb) =>
+            setTimeout(() => cb({ status: "pending", result: null }), 15000)
+          ),
+        ]) as any;
       },
     });
   },
@@ -80,13 +147,14 @@ const CENNZNode = objectType({
 const NetworkEnum = enumType({
   name: "NetworkEnum",
   description: "The different Ledgers BabelFish can connect to",
-  members: ["CENNZnet_Nikau"],
+  members: ["CENNZnet_Azalea", "CENNZnet_Nikau", "Mock", "CENNZnet_Rata"],
 });
 
 const Transaction = objectType({
   name: "Transaction",
   definition(t) {
-    t.string("transactionData", {
+    t.implements("Node");
+    t.string("signerPayload", {
       description: "The transaction data hex encoded.",
     });
     t.field("expectedSigningAddress", {
@@ -109,6 +177,7 @@ const Network = objectType({
   name: "Network",
   description: "A Network/Ledger",
   definition(t) {
+    t.implements(Node);
     t.string("name");
     t.field("address", {
       type: "Address",
@@ -116,10 +185,17 @@ const Network = objectType({
       args: {
         address: nonNull(stringArg()),
       },
-      resolve(parent, args) {
-        return {
-          address: args.address,
-        };
+      resolve(parent, args, { instance }) {
+        const { __network } = getGlobalIdInfo(
+          parent.id as GlobalId<any, "Network">
+        );
+        return instance.load.Address(
+          createGlobalId({
+            __localId: args.address,
+            __network: __network,
+            __type: "Address",
+          })
+        ) as any;
       },
     });
     t.field("ticketedEvent", {
@@ -165,10 +241,14 @@ const Query = queryType({
           type: nonNull(NetworkEnum),
         }),
       },
-      resolve() {
-        return {
-          name: "CENNZnet_Nikau",
-        };
+      resolve(_, args, { instance }) {
+        return instance.load.Network(
+          createGlobalId({
+            __localId: "",
+            __network: args.network,
+            __type: "Network",
+          })
+        ) as any;
       },
     });
   },
@@ -196,6 +276,12 @@ export default makeSchema({
       },
     }),
   ],
+  contextType: __dirname
+    ? {
+        module: require.resolve("./context"),
+        export: "Context",
+      }
+    : undefined,
   outputs: __dirname
     ? {
         typegen: join(__dirname, "..", "nexus-typegen.ts"),

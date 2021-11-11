@@ -4,6 +4,7 @@
  */
 
 
+import type { Context } from "./schema/context"
 import type { core, connectionPluginCore } from "nexus"
 declare global {
   interface NexusGenCustomInputMethods<TypeName extends string> {
@@ -43,15 +44,12 @@ export interface NexusGenInputs {
     name: string; // String!
   }
   TicketedEventDetailsInput: { // input type
-    dateTime?: NexusGenScalars['Date'] | null; // Date
-    description?: string | null; // String
     name: string; // String!
-    venue?: string | null; // String
   }
 }
 
 export interface NexusGenEnums {
-  NetworkEnum: "CENNZnet_Nikau"
+  NetworkEnum: "CENNZnet_Azalea" | "CENNZnet_Nikau" | "CENNZnet_Rata" | "Mock"
 }
 
 export interface NexusGenScalars {
@@ -85,6 +83,7 @@ export interface NexusGenObjects {
   }
   Mutation: {};
   Network: { // root type
+    id?: string | null; // ID
     name?: string | null; // String
   }
   PageInfo: { // root type
@@ -135,15 +134,17 @@ export interface NexusGenObjects {
   }
   Transaction: { // root type
     expectedSigningAddress?: NexusGenRootTypes['Address'] | null; // Address
-    transactionData?: string | null; // String
+    id?: string | null; // ID
+    signerPayload?: string | null; // String
   }
   TransactionResult: { // root type
     result?: NexusGenRootTypes['Node'] | null; // Node
+    status?: string | null; // String
   }
 }
 
 export interface NexusGenInterfaces {
-  Node: NexusGenRootTypes['Address'];
+  Node: NexusGenRootTypes['Address'] | NexusGenRootTypes['Network'] | NexusGenRootTypes['Transaction'];
 }
 
 export interface NexusGenUnions {
@@ -181,6 +182,7 @@ export interface NexusGenFieldTypes {
   }
   Network: { // field return type
     address: NexusGenRootTypes['Address'] | null; // Address
+    id: string | null; // ID
     name: string | null; // String
     nodes: NexusGenRootTypes['CENNZnetNodeConnection'] | null; // CENNZnetNodeConnection
     ticketedEvent: NexusGenRootTypes['TicketedEvent'] | null; // TicketedEvent
@@ -243,7 +245,8 @@ export interface NexusGenFieldTypes {
   }
   Transaction: { // field return type
     expectedSigningAddress: NexusGenRootTypes['Address'] | null; // Address
-    transactionData: string | null; // String
+    id: string | null; // ID
+    signerPayload: string | null; // String
   }
   TransactionResult: { // field return type
     result: NexusGenRootTypes['Node'] | null; // Node
@@ -282,6 +285,7 @@ export interface NexusGenFieldTypeNames {
   }
   Network: { // field return type name
     address: 'Address'
+    id: 'ID'
     name: 'String'
     nodes: 'CENNZnetNodeConnection'
     ticketedEvent: 'TicketedEvent'
@@ -344,7 +348,8 @@ export interface NexusGenFieldTypeNames {
   }
   Transaction: { // field return type name
     expectedSigningAddress: 'Address'
-    transactionData: 'String'
+    id: 'ID'
+    signerPayload: 'String'
   }
   TransactionResult: { // field return type name
     result: 'Node'
@@ -378,7 +383,7 @@ export interface NexusGenArgTypes {
   Mutation: {
     submitTransaction: { // args
       signature?: string | null; // String
-      transactionData?: string | null; // String
+      transactionId: string; // ID!
     }
   }
   Network: {
@@ -440,11 +445,13 @@ export interface NexusGenArgTypes {
 }
 
 export interface NexusGenAbstractTypeMembers {
-  Node: "Address"
+  Node: "Address" | "Network" | "Transaction"
 }
 
 export interface NexusGenTypeInterfaces {
   Address: "Node"
+  Network: "Node"
+  Transaction: "Node"
 }
 
 export type NexusGenObjectNames = keyof NexusGenObjects;
@@ -472,7 +479,7 @@ export type NexusGenFeaturesConfig = {
 }
 
 export interface NexusGenTypes {
-  context: any;
+  context: Context;
   inputTypes: NexusGenInputs;
   rootTypes: NexusGenRootTypes;
   inputTypeShapes: NexusGenInputs & NexusGenEnums & NexusGenScalars;

@@ -4,7 +4,10 @@ import Cors from "cors";
 import schema from "../../schema";
 import { mockAPI } from "./mocks";
 
-import { ApolloServerPluginLandingPageLocalDefault } from "apollo-server-core";
+import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core";
+import { createContext } from "../../schema/context";
+
+// TODO: proper Error Handling.
 
 function initMiddleware(middleware: any) {
   return (req: NextApiRequest, res: NextApiResponse) =>
@@ -26,9 +29,9 @@ const cors = initMiddleware(
 
 const apolloServer = new ApolloServer({
   schema,
+  context: createContext,
   introspection: true,
-  mocks: mockAPI,
-  plugins: [ApolloServerPluginLandingPageLocalDefault],
+  plugins: [ApolloServerPluginLandingPageGraphQLPlayground],
 });
 
 export const config = {

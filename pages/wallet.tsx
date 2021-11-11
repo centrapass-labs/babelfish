@@ -15,7 +15,7 @@ const PHRASE =
 const Home: NextPage = () => {
   const [phrase, setPrase] = useState<string>(PHRASE);
   const [sig, setSig] = useState<string>();
-  const [toSign, setToSign] = useState<string>();
+  const [toSign, setToSign] = useState<string>("");
   const [address, setAddress] = useState<string>();
   const [err, setErr] = useState<string>("");
   useEffect(() => {

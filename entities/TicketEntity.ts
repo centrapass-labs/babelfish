@@ -17,10 +17,10 @@ const TicketEntity = defineEntity(NetworkComponent, NFTComponent, {
     async createRedeemTransaction() {
       const api = await this.apiConnector();
       const tokenOwner = await this.tokenOwner();
-      return {
-        transactionData: api.tx.nft.burn(this.__localId).toHex(),
-        expectedSigningAddress: tokenOwner,
-      };
+      return this.createTransaction({
+        address: tokenOwner.address,
+        extrinsic: api.tx.nft.burn(this.__localId),
+      });
     },
   },
 });

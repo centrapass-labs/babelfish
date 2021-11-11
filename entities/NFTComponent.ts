@@ -1,10 +1,19 @@
 import { Api } from "@cennznet/api";
+import { SubmittableExtrinsic } from "@cennznet/api/types";
 import { NexusGenObjects } from "../nexus-typegen";
 import { defineComponent } from "./entityHelpers";
 
 const NFTComponent = defineComponent<
   {
     apiConnector(): Promise<Api>;
+    createTransaction: (input: {
+      address: string;
+      extrinsic: SubmittableExtrinsic<any, any>;
+    }) => Promise<{
+      expectedSigningAddress: { address: string };
+      signerPayload: any;
+      id: string;
+    }>;
   },
   {
     tokenOwner(): Promise<{ address: string }>;
@@ -28,10 +37,10 @@ const NFTComponent = defineComponent<
     async createTransferTransaction({ toAddress }) {
       const api = await this.apiConnector();
       const tokenOwner = await this.tokenOwner();
-      return {
-        transactionData: api.tx.nft.transfer(this.__localId, toAddress).toHex(),
-        expectedSigningAddress: tokenOwner,
-      };
+      return this.createTransaction({
+        address: tokenOwner.address,
+        extrinsic: api.tx.nft.transfer(this.__localId, toAddress),
+      });
     },
   },
 });

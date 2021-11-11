@@ -20,7 +20,6 @@ const NFTComponent = defineComponent<
   capability: {
     async tokenOwner() {
       const api = await this.apiConnector();
-      // tokenOwner((CollectionId,SeriesId), SerialNumber)
       const owner = await api.query.nft.tokenOwner(this.__localId);
       return {
         address: owner.toString(),

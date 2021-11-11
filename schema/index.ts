@@ -117,12 +117,9 @@ const Mutation = extendType({
         return Promise.race([
           new Promise((resolve) => {
             api.rpc.author.submitAndWatchExtrinsic(extrinsic, (result: any) => {
-              console.log(JSON.stringify(result.toHuman(), null, 2));
-              console.log(result);
               const done =
                 result.toHuman().InBlock || result.toHuman().Finalized;
               if (done) {
-                console.log("DONE");
                 resolve({
                   status: `${done}`,
                   result: null,

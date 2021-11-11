@@ -167,7 +167,7 @@ export function createWorldInstance<E extends Entity<any, any>[]>(
   entities.forEach((entity) => {
     load[entity.__type] = (id: GlobalId<any, any>) => {
       const { __type, __localId, __network } = getGlobalIdInfo(id);
-      console.log(__type);
+
       if (__type !== entity.__type) {
         throw Error(
           "This global ID is of the wrong type -- " +

@@ -30,7 +30,7 @@ const NFTComponent = defineComponent<
       const api = await this.apiConnector();
       const tokenOwner = await this.tokenOwner();
       return {
-        transcationData: api.tx.nft.transfer(this.__localId, toAddress).toHex(),
+        transactionData: api.tx.nft.transfer(this.__localId, toAddress).toHex(),
         expectedSigningAddress: tokenOwner,
       };
     },

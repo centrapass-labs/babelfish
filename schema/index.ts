@@ -63,12 +63,12 @@ const Mutation = extendType({
       description: "Used to submit a transaction to the blockchain",
       type: TransactionResult,
       args: {
-        transcationId: nonNull(idArg()),
+        transactionId: nonNull(idArg()),
         signature: stringArg(),
       },
       async resolve(_root, args, { instance }) {
         const { __network, __type } = getGlobalIdInfo(
-          args.transcationId as GlobalId<any, any>
+          args.transactionId as GlobalId<any, any>
         );
 
         if (__type !== "Transaction") {
@@ -85,14 +85,14 @@ const Mutation = extendType({
           )
           .apiConnector();
 
-        if (!args.transcationId) {
+        if (!args.transactionId) {
           throw new Error("");
         }
 
         const signerPayload = api.registry.createType(
           "SignerPayload",
           Buffer.from(
-            args.transcationId.replace(
+            args.transactionId.replace(
               Buffer.from(`${__network}:Transaction:`).toString("base64url"),
 
               ""

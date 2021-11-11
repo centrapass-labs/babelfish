@@ -18,7 +18,7 @@ const TicketEntity = defineEntity(NetworkComponent, NFTComponent, {
       const api = await this.apiConnector();
       const tokenOwner = await this.tokenOwner();
       return {
-        transcationData: api.tx.nft.burn(this.__localId).toHex(),
+        transactionData: api.tx.nft.burn(this.__localId).toHex(),
         expectedSigningAddress: tokenOwner,
       };
     },

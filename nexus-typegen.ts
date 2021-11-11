@@ -383,7 +383,7 @@ export interface NexusGenArgTypes {
   Mutation: {
     submitTransaction: { // args
       signature?: string | null; // String
-      transcationId: string; // ID!
+      transactionId: string; // ID!
     }
   }
   Network: {

@@ -89,7 +89,7 @@ type Health {
 
 type Mutation {
   """Used to submit a transaction to the blockchain"""
-  submitTransaction(signature: String, transcationId: ID!): TransactionResult!
+  submitTransaction(signature: String, transactionId: ID!): TransactionResult!
 }
 
 """A Network/Ledger"""

@@ -68,7 +68,7 @@ const Mutation = extendType({
       },
       async resolve(_root, args, { instance }) {
         const { __network, __type } = getGlobalIdInfo(
-          args.transcationId as GlobalId<any, any>
+          args.transactionId as GlobalId<any, any>
         );
 
         if (__type !== "Transaction") {
@@ -92,7 +92,7 @@ const Mutation = extendType({
         const signerPayload = api.registry.createType(
           "SignerPayload",
           Buffer.from(
-            args.transcationId.replace(
+            args.transactionId.replace(
               Buffer.from(`${__network}:Transaction:`).toString("base64url"),
 
               ""

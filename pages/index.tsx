@@ -2,34 +2,11 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-const cryptoUtil = require("@polkadot/util-crypto");
-import { hexToU8a, u8aToHex } from "@polkadot/util";
-import { Keyring } from "@polkadot/api";
 import Image from "next/image";
 
 import babelfishDiagram from "../public/babelfishDiagram.png";
 
-const keyring = new Keyring({ type: "sr25519" });
-
-// Some mnemonic phrase
-const PHRASE =
-  "copper veteran indoor satoshi enroll girl reveal leisure normal battle equal wise";
-
-// Add an account, straight mnemonic
 const Home: NextPage = () => {
-  const [sig, setSig] = useState<string>();
-  const [toSign, setToSign] = useState<string>();
-  const [address, setAddress] = useState<string>();
-  useEffect(() => {
-    const run = async () => {
-      await cryptoUtil.cryptoWaitReady();
-      const newPair = keyring.addFromUri(PHRASE);
-      setAddress(newPair.address);
-      setSig(u8aToHex(newPair.sign(hexToU8a(toSign), { withType: true })));
-    };
-    run();
-  }, [toSign]);
   return (
     <div className={styles.container}>
       <Head>
@@ -55,23 +32,6 @@ const Home: NextPage = () => {
           end our IDs are global and can be used to refetch that node.
         </p>
         <div className={styles.grid}>
-          {/* <div>
-            <label>
-              signerPayload
-              <input
-                value={toSign}
-                onChange={({ target }) => setToSign(target.value)}
-              />
-            </label>
-            <label>
-              Signature
-              <input value={sig} readOnly />
-            </label>
-            <label>
-              Address
-              <input value={address} readOnly />
-            </label>
-          </div> */}
           <Link href="/api/graphql">
             <a className={styles.card}>
               <h2>GraphQL Endpoint</h2>
@@ -84,16 +44,28 @@ const Home: NextPage = () => {
               <p>Where you can read about how to use Babelfish</p>
             </a>
           </Link>
-          <Link href="/api/graphql">
+          <Link href="/wallet">
+            <a className={styles.card}>
+              <h2>In browser wallet</h2>
+              <p>Very simple inbrowser wallet to use for testing.</p>
+            </a>
+          </Link>
+          <Link href="/docs">
             <a className={styles.card}>
               <h2>Create Event - Promotor</h2>
               <p>In this Demo you will create Event</p>
             </a>
           </Link>
-          <Link href="/api/graphql">
+          <Link href="/docs">
             <a className={styles.card}>
               <h2>Receive and Use Ticket - Customer</h2>
               <p>In this Recieive you ticket create Event</p>
+            </a>
+          </Link>
+          <Link href="/docs">
+            <a className={styles.card}>
+              <h2>Create Generic NFT</h2>
+              <p>Just need an NFT for something</p>
             </a>
           </Link>
         </div>

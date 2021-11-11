@@ -85,7 +85,7 @@ const Mutation = extendType({
           )
           .apiConnector();
 
-        if (!args.transcationId) {
+        if (!args.transactionId) {
           throw new Error("");
         }
 

@@ -45,11 +45,14 @@ const Home: NextPage = () => {
         <p className={styles.description}>
           Babelfish aims to simplify crypto and decentralized systems by
           sticking a single gateway that trys to do as much of the heavy lifting
-          for you. Babelfish can build transcations for you so that all you need
-          to do is simple sign a payload and submit it back via babelfish.
-          Meaning with babelfish you can implement complex dApps where the
-          consumer only needs to know how to sign payloads, and do graphQL
-          requests (which are POST http calls).
+          for you. On top of querying, Babelfish can build transcations for you
+          so that all you need to do is simple sign a payload and submit it back
+          via babelfish. Meaning with babelfish you can implement complex dApps
+          where the consumer only needs to know how to sign payloads, and do
+          graphQL requests (which are POST http calls). Babelfish follows all of
+          the Relay Specification
+          https://relay.dev/docs/guides/graphql-server-specification/ to this
+          end our IDs are global and can be used to refetch that node.
         </p>
         <div className={styles.grid}>
           {/* <div>

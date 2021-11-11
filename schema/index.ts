@@ -63,7 +63,7 @@ const Mutation = extendType({
       description: "Used to submit a transaction to the blockchain",
       type: TransactionResult,
       args: {
-        transcationId: nonNull(idArg()),
+        transactionId: nonNull(idArg()),
         signature: stringArg(),
       },
       async resolve(_root, args, { instance }) {

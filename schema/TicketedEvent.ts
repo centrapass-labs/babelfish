@@ -5,7 +5,9 @@ import {
   stringArg,
   list,
   inputObjectType,
+  nonNull,
 } from "nexus";
+import { GlobalId } from "../entities/entityHelpers";
 import "../nexus-typegen";
 
 export const TicketTypeInput = inputObjectType({
@@ -14,6 +16,12 @@ export const TicketTypeInput = inputObjectType({
     t.nonNull.string("name");
     t.string("fineprint");
     t.string("description");
+    t.string("venue", {
+      description: "The venue for the event. IE On an Island",
+    });
+    t.date("dateTime", {
+      description: "The date and time of the event in ISO date format.",
+    });
   },
 });
 
@@ -21,12 +29,16 @@ export const TicketedEvent = objectType({
   name: "TicketedEvent",
   description: "An Event with Ticketed access.",
   definition(t) {
+    t.implements("Node");
+    // t.id("TicketedEvent");
     t.string("name", { description: "The name of the the ticketed event." });
     t.string("venue", { description: "The Venue of the ticket event." });
     t.string("description", {
       description: "The description of the ticketed event.",
     });
-    t.date("dateTime", { description: "When the event is in ISO date format." });
+    t.date("dateTime", {
+      description: "When the event is in ISO date format.",
+    });
     t.field("ticketTypes", {
       description: "The different types of tickets",
       type: list("TicketType"),
@@ -35,8 +47,12 @@ export const TicketedEvent = objectType({
       type: "Ticket",
       description: "All the tickets",
       additionalArgs: {
-        ticketTypeId: stringArg({ description: "If supplied, filters by the specific ticket type"}),
-        address: stringArg({ description: "If supplied, filters by the specified address"}),
+        ticketTypeId: stringArg({
+          description: "If supplied, filters by the specific ticket type",
+        }),
+        address: stringArg({
+          description: "If supplied, filters by the specified address",
+        }),
       },
       totalCount() {
         return 10;
@@ -59,19 +75,24 @@ export const TicketedEvent = objectType({
       description: "Create a new Ticket Type IE VIP",
       type: "Transaction",
       args: {
-        quantity: intArg(),
-        ticketType: arg({
-          type: TicketTypeInput,
-        }),
+        quantity: nonNull(intArg()),
+        ticketType: nonNull(
+          arg({
+            type: TicketTypeInput,
+          })
+        ),
       },
-      resolve(parent) {
-        return {
-          expectedSigningAddress: {
-            address: "5ENzTzH49uZKgYAD1Aa8zCpSfpcub2NkpBewoQgpDa6xkrif",
-          },
-          transactionData:
-            "AF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEF",
-        };
+      resolve(source, args, context) {
+        return context.instance.load
+          .TicketedEvent(source.id as GlobalId<any, "TickedEvent">)
+          .createNewTicketType({
+            name: args.ticketType.name,
+            description: args.ticketType.description,
+            quantity: args.quantity,
+            venue: args.ticketType.venue,
+            fineprint: args.ticketType.fineprint,
+            dateTime: args.ticketType.dateTime,
+          });
       },
     });
 

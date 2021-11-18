@@ -39,9 +39,11 @@ declare global {
 
 export interface NexusGenInputs {
   TicketTypeInput: { // input type
+    dateTime?: NexusGenScalars['Date'] | null; // Date
     description?: string | null; // String
     fineprint?: string | null; // String
     name: string; // String!
+    venue?: string | null; // String
   }
   TicketedEventDetailsInput: { // input type
     name: string; // String!
@@ -128,6 +130,7 @@ export interface NexusGenObjects {
   TicketedEvent: { // root type
     dateTime?: NexusGenScalars['Date'] | null; // Date
     description?: string | null; // String
+    id?: string | null; // ID
     name?: string | null; // String
     ticketTypes?: Array<NexusGenRootTypes['TicketType'] | null> | null; // [TicketType]
     venue?: string | null; // String
@@ -144,7 +147,7 @@ export interface NexusGenObjects {
 }
 
 export interface NexusGenInterfaces {
-  Node: NexusGenRootTypes['Address'] | NexusGenRootTypes['Network'] | NexusGenRootTypes['Transaction'];
+  Node: NexusGenRootTypes['Address'] | NexusGenRootTypes['Network'] | NexusGenRootTypes['TicketedEvent'] | NexusGenRootTypes['Transaction'];
 }
 
 export interface NexusGenUnions {
@@ -237,6 +240,7 @@ export interface NexusGenFieldTypes {
     createNewTicketType: NexusGenRootTypes['Transaction'] | null; // Transaction
     dateTime: NexusGenScalars['Date'] | null; // Date
     description: string | null; // String
+    id: string | null; // ID
     name: string | null; // String
     ticketStubs: NexusGenRootTypes['TicketStubConnection'] | null; // TicketStubConnection
     ticketTypes: Array<NexusGenRootTypes['TicketType'] | null> | null; // [TicketType]
@@ -340,6 +344,7 @@ export interface NexusGenFieldTypeNames {
     createNewTicketType: 'Transaction'
     dateTime: 'Date'
     description: 'String'
+    id: 'ID'
     name: 'String'
     ticketStubs: 'TicketStubConnection'
     ticketTypes: 'TicketType'
@@ -424,8 +429,8 @@ export interface NexusGenArgTypes {
       ticketTypeId?: string | null; // String
     }
     createNewTicketType: { // args
-      quantity?: number | null; // Int
-      ticketType?: NexusGenInputs['TicketTypeInput'] | null; // TicketTypeInput
+      quantity: number; // Int!
+      ticketType: NexusGenInputs['TicketTypeInput']; // TicketTypeInput!
     }
     ticketStubs: { // args
       after?: string | null; // String
@@ -445,12 +450,13 @@ export interface NexusGenArgTypes {
 }
 
 export interface NexusGenAbstractTypeMembers {
-  Node: "Address" | "Network" | "Transaction"
+  Node: "Address" | "Network" | "TicketedEvent" | "Transaction"
 }
 
 export interface NexusGenTypeInterfaces {
   Address: "Node"
   Network: "Node"
+  TicketedEvent: "Node"
   Transaction: "Node"
 }
 

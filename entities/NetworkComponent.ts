@@ -19,6 +19,7 @@ const NetworkComponent = defineComponent<
     createTransaction: (input: {
       address: string;
       extrinsic: SubmittableExtrinsic<any, any>;
+      outputType?: string;
     }) => Promise<{
       expectedSigningAddress: { address: string };
       signerPayload: any;
@@ -42,7 +43,7 @@ const NetworkComponent = defineComponent<
       }
       return networkStore[this.__network];
     },
-    async createTransaction({ address, extrinsic }) {
+    async createTransaction({ address, extrinsic, outputType }) {
       const api = await this.apiConnector();
       const nonce = await api.rpc.system.accountNextIndex(address);
 
@@ -69,8 +70,9 @@ const NetworkComponent = defineComponent<
       );
 
       const id =
-        Buffer.from(`${this.__network}:Transaction:`).toString("base64url") +
-        Buffer.from(signerPayload.toU8a()).toString("base64url");
+        Buffer.from(`${this.__network}:Transaction:${outputType}:`).toString(
+          "base64url"
+        ) + Buffer.from(signerPayload.toU8a()).toString("base64url");
 
       return {
         expectedSigningAddress: { address },

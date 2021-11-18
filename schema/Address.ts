@@ -9,16 +9,6 @@ export const TicketedEventDetailsInput = inputObjectType({
     t.nonNull.string("name", {
       description: "The name of the event. IE My Festival",
     });
-    // When we initially create an event its just a collection
-    // t.string("venue", {
-    //   description: "The venue for the event. IE On an Island",
-    // });
-    // t.string("description", {
-    //   description: "The description of the event. IE Fun on an Island",
-    // });
-    // t.date("dateTime", {
-    //   description: "The date and time of the event in ISO date format.",
-    // });
   },
 });
 

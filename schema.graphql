@@ -256,24 +256,32 @@ type TicketType {
 }
 
 input TicketTypeInput {
+  """The date and time of the event in ISO date format."""
+  dateTime: Date
   description: String
   fineprint: String
   name: String!
+
+  """The venue for the event. IE On an Island"""
+  venue: String
 }
 
 """An Event with Ticketed access."""
-type TicketedEvent {
+type TicketedEvent implements Node {
   """Create additional tickets of an existing ticket type"""
   createAdditionalTickets(quantity: Int, ticketTypeId: String): Transaction
 
   """Create a new Ticket Type IE VIP"""
-  createNewTicketType(quantity: Int, ticketType: TicketTypeInput): Transaction
+  createNewTicketType(quantity: Int!, ticketType: TicketTypeInput!): Transaction
 
   """When the event is in ISO date format."""
   dateTime: Date
 
   """The description of the ticketed event."""
   description: String
+
+  """Unique identifier for the resource"""
+  id: ID
 
   """The name of the the ticketed event."""
   name: String

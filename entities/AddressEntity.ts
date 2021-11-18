@@ -13,6 +13,7 @@ const AddresssEntity = defineEntity(NetworkComponent, {
       return this.createTransaction({
         address: this.__localId,
         extrinsic: unsigned,
+        outputType: "TicketedEvent",
       });
     },
   },

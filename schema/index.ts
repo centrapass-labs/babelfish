@@ -20,13 +20,14 @@ import * as TicketedEvent from "./TicketedEvent";
 import * as Ticket from "./Ticket";
 import * as Address from "./Address";
 
-import { GraphQLDate } from "graphql-iso-date";
+import { GraphQLDate, GraphQLDateTime } from "graphql-iso-date";
 import {
   createGlobalId,
   getGlobalIdInfo,
   GlobalId,
 } from "../entities/entityHelpers";
 import { Text } from "@polkadot/types";
+import { GraphQLScalarType } from "graphql";
 
 /*
 TODO: 
@@ -37,7 +38,16 @@ fix some spelling
 touch up the mock data to make it more realisitic.
 */
 
+const JSONScalar = new GraphQLScalarType({
+  name: "JSON",
+
+  serialize: (data: any) => data,
+  parseValue: (data: any) => data,
+});
+
 const GQLDate = asNexusMethod(GraphQLDate, "date");
+const GQLJSON = asNexusMethod(JSONScalar, "json");
+const GQLDateTime = asNexusMethod(GraphQLDateTime, "dateTime");
 
 const Node = interfaceType({
   name: "Node",
@@ -262,6 +272,8 @@ const Transaction = objectType({
     t.string("signerPayload", {
       description: "The transaction data hex encoded.",
     });
+    t.field("result", { type: Node });
+    t.string("status");
     t.field("expectedSigningAddress", {
       type: "Address",
       description:
@@ -303,29 +315,29 @@ const Network = objectType({
         ) as any;
       },
     });
-    t.field("ticketedEvent", {
-      args: {
-        id: nonNull(stringArg()),
-      },
-      description: "Get a ticketed event via its id.",
-      type: "TicketedEvent",
-      resolve() {
-        return {
-          name: "My Awesome Festival",
-        };
-      },
-    });
-    t.connectionField("nodes", {
-      type: CENNZNode,
-      description: "Get the nodes in the network.",
-      totalCount() {
-        // DEMO DATA
-        return 42;
-      },
-      nodes() {
-        return [{}];
-      },
-    });
+    // t.field("ticketedEvent", {
+    //   args: {
+    //     id: nonNull(stringArg()),
+    //   },
+    //   description: "Get a ticketed event via its id.",
+    //   type: "TicketedEvent",
+    //   resolve() {
+    //     return {
+    //       name: "My Awesome Festival",
+    //     };
+    //   },
+    // });
+    // t.connectionField("nodes", {
+    //   type: CENNZNode,
+    //   description: "Get the nodes in the network.",
+    //   totalCount() {
+    //     throw new
+    //     return 42;
+    //   },
+    //   nodes() {
+    //     return [{}];
+    //   },
+    // });
   },
 });
 
@@ -337,6 +349,15 @@ const Query = queryType({
         return {
           status: "OK",
         };
+      },
+    });
+    t.field("node", {
+      type: Node,
+      args: {
+        id: idArg(),
+      },
+      resolve(_, args, { instance }) {
+        return instance.loadEntity(args.id as GlobalId<any, any>) as any;
       },
     });
     t.field("network", {
@@ -367,6 +388,8 @@ export default makeSchema({
     Node,
     Query,
     GQLDate,
+    GQLJSON,
+    GQLDateTime,
     Mutation,
     TicketStub,
     TicketedEvent,

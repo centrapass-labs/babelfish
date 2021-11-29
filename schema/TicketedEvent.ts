@@ -15,11 +15,12 @@ export const TicketTypeInput = inputObjectType({
   definition(t) {
     t.nonNull.string("name");
     t.string("fineprint");
+    t.string("image");
     t.string("description");
     t.string("venue", {
       description: "The venue for the event. IE On an Island",
     });
-    t.date("dateTime", {
+    t.dateTime("dateTime", {
       description: "The date and time of the event in ISO date format.",
     });
   },
@@ -30,18 +31,16 @@ export const TicketedEvent = objectType({
   description: "An Event with Ticketed access.",
   definition(t) {
     t.implements("Node");
-    // t.id("TicketedEvent");
     t.string("name", { description: "The name of the the ticketed event." });
-    t.string("venue", { description: "The Venue of the ticket event." });
-    t.string("description", {
-      description: "The description of the ticketed event.",
-    });
-    t.date("dateTime", {
-      description: "When the event is in ISO date format.",
-    });
+
     t.field("ticketTypes", {
       description: "The different types of tickets",
       type: list("TicketType"),
+      resolve(source, args, context) {
+        return context.instance.load
+          .TicketedEvent(source.id as GlobalId<any, "TickedEvent">)
+          .ticketTypes();
+      },
     });
     t.connectionField("tickets", {
       type: "Ticket",
@@ -55,10 +54,20 @@ export const TicketedEvent = objectType({
         }),
       },
       totalCount() {
+        throw new Error("Total count currently not supported");
         return 10;
       },
-      nodes() {
-        return [{}];
+      cursorFromNode(node, args, ctx, info, { index, nodes }) {
+        // @ts-ignore
+        return JSON.stringify(node.tokenId);
+      },
+      nodes(source, { ticketTypeId, address }, context) {
+        return context.instance.load
+          .TicketedEvent(source.id as GlobalId<any, "TickedEvent">)
+          .tickets({
+            ticketTypeId,
+            address,
+          });
       },
     });
     t.connectionField("ticketStubs", {
@@ -92,6 +101,7 @@ export const TicketedEvent = objectType({
             venue: args.ticketType.venue,
             fineprint: args.ticketType.fineprint,
             dateTime: args.ticketType.dateTime,
+            image: args.ticketType.image,
           });
       },
     });
@@ -103,14 +113,13 @@ export const TicketedEvent = objectType({
         quantity: intArg(),
         ticketTypeId: stringArg(),
       },
-      resolve(parent) {
-        return {
-          expectedSigningAddress: {
-            address: "5ENzTzH49uZKgYAD1Aa8zCpSfpcub2NkpBewoQgpDa6xkrif",
-          },
-          transactionData:
-            "AF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEF",
-        };
+      resolve(source, args, context) {
+        return context.instance.load
+          .TicketedEvent(source.id as GlobalId<any, "TickedEvent">)
+          .createAdditionalTickets({
+            ticketTypeId: args.ticketTypeId,
+            quantity: args.quantity,
+          });
       },
     });
   },

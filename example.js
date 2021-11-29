@@ -22,8 +22,17 @@ async function run(phrase, eventName) {
    * Get Signing Payload and Transaction ID for the transaction to create an Ticket Event.
    */
   var getSigningPayload = JSON.stringify({
-    query:
-      "query($address: String!, $eventDetails: TicketedEventDetailsInput!) {\n  network(network: CENNZnet_Nikau) {\n    address(address: $address) {\n      address\n      createTicketedEvent(eventDetails: $eventDetails) {\n        id\n        signerPayload\n      }\n    }\n  }\n}",
+    query: `query($address: String!, $eventDetails: TicketedEventDetailsInput!) {
+ network(network: CENNZnet_Nikau) {
+   address(address: $address) {
+     address
+     createTicketedEvent(eventDetails: $eventDetails) {
+       id
+       signerPayload
+     }
+   }
+ }
+}`,
     variables: {
       address,
       eventDetails: { name: eventName },

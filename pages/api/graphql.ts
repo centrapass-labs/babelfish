@@ -33,7 +33,7 @@ const apolloServer = new ApolloServer({
   introspection: true,
   plugins: [
     ApolloServerPluginLandingPageGraphQLPlayground,
-    ApolloLogPlugin as any,
+    // ApolloLogPlugin as any,
   ],
 });
 

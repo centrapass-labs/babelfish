@@ -3,6 +3,8 @@ import NetworkEntity from "./NetworkEntity";
 import TicketEntity from "./TicketEntity";
 import AddressEntity from "./AddressEntity";
 import TicketedEventEntity from "./TicketedEventEntity";
+import TransactionEntity from "./TransactionEntity";
+import TicketTypeEntity from "./TicketTypeEntity";
 
 export function createInstance() {
   return createWorldInstance({}, [
@@ -10,5 +12,7 @@ export function createInstance() {
     NetworkEntity,
     AddressEntity,
     TicketedEventEntity,
+    TransactionEntity,
+    TicketTypeEntity,
   ]);
 }

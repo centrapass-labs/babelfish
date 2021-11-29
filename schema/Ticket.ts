@@ -1,11 +1,35 @@
-import { objectType, stringArg, nonNull } from "nexus";
+import { objectType, stringArg, nonNull, interfaceType } from "nexus";
+import { getGlobalIdInfo, GlobalId } from "../entities/entityHelpers";
 import "../nexus-typegen";
+
+export const NFT = interfaceType({
+  name: "NFT",
+  resolveType({ id }) {
+    const { __network, __type, __localId } = getGlobalIdInfo(
+      id as GlobalId<any, any>
+    );
+    return __type;
+  },
+  definition(t) {
+    t.implements("Node");
+    t.string("name", {
+      description: "The name of NFT",
+    });
+    t.string("description", {
+      description: "The name of NFT",
+    });
+    t.string("image", {
+      description: "The name of NFT",
+    });
+    t.json("metadata");
+  },
+});
 
 export const TicketType = objectType({
   name: "TicketType",
   description: "The type of a ticket IE General Admission, VIP, etc",
   definition(t) {
-    t.id("ticketTypeId");
+    t.implements("Node");
     t.string("name", {
       description: "The name of this ticket type: IE 'General Admission'",
     });
@@ -16,12 +40,18 @@ export const TicketType = objectType({
     t.connectionField("tickets", {
       type: "Ticket",
       description: "The tickets associated with this ticket type.",
-
       totalCount() {
+        throw new Error("Total count currently not supported");
         return 10;
       },
-      nodes() {
-        return [{}];
+      cursorFromNode(node, args, ctx, info, { index, nodes }) {
+        // @ts-ignore
+        return JSON.stringify(node.tokenId);
+      },
+      nodes(source, args, context) {
+        return context.instance.load
+          .TicketType(source.id as GlobalId<any, "TicketType">)
+          .tickets(args);
       },
     });
   },
@@ -31,8 +61,22 @@ export const Ticket = objectType({
   name: "Ticket",
   description: "A ticket for an Ticketed Event",
   definition(t) {
+    t.implements("NFT");
     t.field("event", {
       type: "TicketedEvent",
+      resolve(source, args, context) {
+        return context.instance.load
+          .Ticket(source.id as GlobalId<any, "Ticket">)
+          .event();
+      },
+    });
+    t.field("owner", {
+      type: "Address",
+      resolve(source, args, context) {
+        return context.instance.load
+          .Ticket(source.id as GlobalId<any, "Ticket">)
+          .tokenOwner();
+      },
     });
     t.field("ticketType", {
       type: "TicketType",
@@ -45,24 +89,20 @@ export const Ticket = objectType({
       args: {
         toAddress: nonNull(stringArg()),
       },
-      resolve(parent) {
-        return {
-          expectedSigningAddress: { address: "DFDSFSDFDSFSD" },
-          transactionData:
-            "AF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEF",
-        };
+      resolve(source, args, context) {
+        return context.instance.load
+          .Ticket(source.id as GlobalId<any, "TickedEvent">)
+          .createTransferTransaction(args);
       },
     });
     t.field("createRedeemTransaction", {
       type: "Transaction",
       description:
         "Creates a Transaction for redeeming the ticket for an entry pass, this manifests as a burn event onchain",
-      resolve(parent) {
-        return {
-          expectedSigningAddress: { address: "DFDSFSDFDSFSD" },
-          transactionData:
-            "AF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEFAF2368954E456BC343AEF323237674432BFACEF",
-        };
+      resolve(source, args, context) {
+        return context.instance.load
+          .Ticket(source.id as GlobalId<any, "TickedEvent">)
+          .burn();
       },
     });
   },

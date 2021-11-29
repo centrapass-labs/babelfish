@@ -47,7 +47,10 @@ export function getGlobalIdInfo<
 type ThisContext<
   N extends NexusGenEnums["NetworkEnum"],
   T extends string
-> = GlobalIdInfo<N, T>;
+> = GlobalIdInfo<N, T> & {
+  __globalId: string;
+  load: { [key: string]: (id: string) => any };
+};
 
 type Cap<
   N extends NexusGenEnums["NetworkEnum"],
@@ -183,6 +186,8 @@ export function createWorldInstance<E extends Entity<any, any>[]>(
         __type,
         __localId,
         __network,
+        __globalId: id,
+        load,
       } as any;
       Object.entries(entity.capability).forEach(([key, value]) => {
         entityInstance[key] = (...args: any[]) =>

@@ -21,8 +21,8 @@ const NetworkComponent = defineComponent<
       extrinsic: SubmittableExtrinsic<any, any>;
       outputType?: string;
     }) => Promise<{
-      expectedSigningAddress: { address: string };
-      signerPayload: any;
+      // expectedSigningAddress: { address: string };
+      // signerPayload: any;
       id: string;
     }>;
   }
@@ -74,11 +74,7 @@ const NetworkComponent = defineComponent<
           "base64url"
         ) + Buffer.from(signerPayload.toU8a()).toString("base64url");
 
-      return {
-        expectedSigningAddress: { address },
-        signerPayload: signerPayloadData,
-        id,
-      };
+      return this.load.Transaction(id);
     },
   },
 });

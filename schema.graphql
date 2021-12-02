@@ -267,6 +267,9 @@ type TicketStubEdge {
 
 """The type of a ticket IE General Admission, VIP, etc"""
 type TicketType implements Node {
+  """Create additional tickets of an existing ticket type"""
+  createAdditionalTickets(quantity: Int): Transaction
+
   """Unique identifier for the resource"""
   id: ID
 
@@ -306,9 +309,6 @@ input TicketTypeInput {
 
 """An Event with Ticketed access."""
 type TicketedEvent implements Node {
-  """Create additional tickets of an existing ticket type"""
-  createAdditionalTickets(quantity: Int, ticketTypeId: String): Transaction
-
   """Create a new Ticket Type IE VIP"""
   createNewTicketType(quantity: Int!, ticketType: TicketTypeInput!): Transaction
 

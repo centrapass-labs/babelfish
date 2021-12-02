@@ -1,4 +1,4 @@
-import { objectType, stringArg, nonNull, interfaceType } from "nexus";
+import { objectType, stringArg, nonNull, interfaceType, intArg } from "nexus";
 import { getGlobalIdInfo, GlobalId } from "../entities/entityHelpers";
 import "../nexus-typegen";
 
@@ -36,6 +36,20 @@ export const TicketType = objectType({
     t.field("ticketedEvent", {
       description: "The event this type is associated with",
       type: "TicketedEvent",
+    });
+    t.field("createAdditionalTickets", {
+      description: "Create additional tickets of an existing ticket type",
+      type: "Transaction",
+      args: {
+        quantity: intArg(),
+      },
+      resolve(source, args, context) {
+        return context.instance.load
+          .TicketType(source.id as GlobalId<any, "TicketType">)
+          .createAdditionalTickets({
+            quantity: args.quantity,
+          });
+      },
     });
     t.connectionField("tickets", {
       type: "Ticket",

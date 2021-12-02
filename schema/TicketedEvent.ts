@@ -105,22 +105,5 @@ export const TicketedEvent = objectType({
           });
       },
     });
-
-    t.field("createAdditionalTickets", {
-      description: "Create additional tickets of an existing ticket type",
-      type: "Transaction",
-      args: {
-        quantity: intArg(),
-        ticketTypeId: stringArg(),
-      },
-      resolve(source, args, context) {
-        return context.instance.load
-          .TicketedEvent(source.id as GlobalId<any, "TickedEvent">)
-          .createAdditionalTickets({
-            ticketTypeId: args.ticketTypeId,
-            quantity: args.quantity,
-          });
-      },
-    });
   },
 });

@@ -246,13 +246,13 @@ export interface NexusGenFieldTypes {
     node: NexusGenRootTypes['TicketStub'] | null; // TicketStub
   }
   TicketType: { // field return type
+    createAdditionalTickets: NexusGenRootTypes['Transaction'] | null; // Transaction
     id: string | null; // ID
     name: string | null; // String
     ticketedEvent: NexusGenRootTypes['TicketedEvent'] | null; // TicketedEvent
     tickets: NexusGenRootTypes['TicketConnection'] | null; // TicketConnection
   }
   TicketedEvent: { // field return type
-    createAdditionalTickets: NexusGenRootTypes['Transaction'] | null; // Transaction
     createNewTicketType: NexusGenRootTypes['Transaction'] | null; // Transaction
     id: string | null; // ID
     name: string | null; // String
@@ -359,13 +359,13 @@ export interface NexusGenFieldTypeNames {
     node: 'TicketStub'
   }
   TicketType: { // field return type name
+    createAdditionalTickets: 'Transaction'
     id: 'ID'
     name: 'String'
     ticketedEvent: 'TicketedEvent'
     tickets: 'TicketConnection'
   }
   TicketedEvent: { // field return type name
-    createAdditionalTickets: 'Transaction'
     createNewTicketType: 'Transaction'
     id: 'ID'
     name: 'String'
@@ -449,6 +449,9 @@ export interface NexusGenArgTypes {
     }
   }
   TicketType: {
+    createAdditionalTickets: { // args
+      quantity?: number | null; // Int
+    }
     tickets: { // args
       after?: string | null; // String
       before?: string | null; // String
@@ -457,10 +460,6 @@ export interface NexusGenArgTypes {
     }
   }
   TicketedEvent: {
-    createAdditionalTickets: { // args
-      quantity?: number | null; // Int
-      ticketTypeId?: string | null; // String
-    }
     createNewTicketType: { // args
       quantity: number; // Int!
       ticketType: NexusGenInputs['TicketTypeInput']; // TicketTypeInput!

@@ -29,15 +29,6 @@ import {
 import { Text } from "@polkadot/types";
 import { GraphQLScalarType } from "graphql";
 
-/*
-TODO: 
-Add more fields on everything to bring it up to par with google/apple/general industry specs
-Add more fields
-remove some abgeuitity from the names
-fix some spelling
-touch up the mock data to make it more realisitic.
-*/
-
 const JSONScalar = new GraphQLScalarType({
   name: "JSON",
 
@@ -70,7 +61,7 @@ const TransactionResult = objectType({
   },
 });
 
-async function getTranscation(__network: string, hash: string, loop: boolean) {
+async function getTransaction(__network: string, hash: string, loop: boolean) {
   const UnCoverEndpoint =
     __network == "CENNZnet_Nikau"
       ? "https://service.eks.centrality.me/"
@@ -159,7 +150,7 @@ const Mutation = extendType({
           signerPayload.toPayload()
         );
 
-        function handleSomething(fnd: any) {
+        function handle(fnd: any) {
           return new Promise((resolve, reject) => {
             if (!fnd.data.success) {
               reject(
@@ -187,18 +178,14 @@ const Mutation = extendType({
               );
 
               resolve({
-                status: `${JSON.stringify({
-                  collectionId,
-                  collectionName: new Text(api.registry, collectionName),
-                  collectionOwner,
-                })}`,
-                result: {
-                  id: createGlobalId({
+                status: "Success",
+                result: instance.loadEntity(
+                  createGlobalId({
                     __network,
                     __type: __localId,
                     __localId: collectionId,
-                  }),
-                },
+                  })
+                ),
               });
             } else {
               resolve({
@@ -207,14 +194,14 @@ const Mutation = extendType({
             }
           });
         }
-        const found = await getTranscation(
+        const found = await getTransaction(
           __network,
           extrinsic.hash.toHex(),
           false
         );
 
         if (found) {
-          return handleSomething(found);
+          return handle(found);
         }
 
         return Promise.race([
@@ -232,12 +219,12 @@ const Mutation = extendType({
                     return reject(`${__network} not supported for this`);
                   }
 
-                  const found = await getTranscation(
+                  const found = await getTransaction(
                     __network,
                     extrinsic.hash.toHex(),
                     true
                   );
-                  handleSomething(found).then(resolve).catch(reject);
+                  handle(found).then(resolve).catch(reject);
                 }
               }
             );
@@ -315,29 +302,6 @@ const Network = objectType({
         ) as any;
       },
     });
-    // t.field("ticketedEvent", {
-    //   args: {
-    //     id: nonNull(stringArg()),
-    //   },
-    //   description: "Get a ticketed event via its id.",
-    //   type: "TicketedEvent",
-    //   resolve() {
-    //     return {
-    //       name: "My Awesome Festival",
-    //     };
-    //   },
-    // });
-    // t.connectionField("nodes", {
-    //   type: CENNZNode,
-    //   description: "Get the nodes in the network.",
-    //   totalCount() {
-    //     throw new
-    //     return 42;
-    //   },
-    //   nodes() {
-    //     return [{}];
-    //   },
-    // });
   },
 });
 
@@ -416,6 +380,4 @@ export default makeSchema({
         schema: join(__dirname, "..", "schema.graphql"),
       }
     : {},
-  // or types: { Account, Node, Query }
-  // or types: [Account, [Node], { Query }]
 });

@@ -1,0 +1,95 @@
+# Create Event
+
+As a event organizer the first step is to create the ticketed event.
+An ticketed event is stored on the blockchain as a NFT collection.
+
+To interact with the blockchain you first need to create the correct payload to sign with the events organizers private keys.
+In this case you create Ticketed Events on the address that is associated with the events organizers private key.
+
+The follow query is an example of how this can be done.
+
+### Query
+
+```graphql
+query ($address: String!, $eventDetails: TicketedEventDetailsInput!) {
+  network(network: CENNZnet_Nikau) {
+    address(address: $address) {
+      createTicketedEvent(eventDetails: $eventDetails) {
+        id
+        signerPayload
+      }
+    }
+  }
+}
+```
+
+### Variables
+
+```json
+{
+  "address": "5G6L4FqzKtpe9T48eUK5fTrfM9znsmPGKNrxcynaw2hCfRoL",
+  "eventDetails": { "name": "My Awesome Event" }
+}
+```
+
+### Response
+
+<textarea>
+  {`{
+  "data": {
+    "network": {
+      "address": {
+        "createTicketedEvent": {
+          "id": "Q0VOTlpuZXRfTmlrYXU6VHJhbnNhY3Rpb246VGlja2V0ZWRFdmVudDosi4J4JIAzGa290SloNzTRohXJ6NsnRRdWtjlmJyYAU5NkzcImEiqGqx_bbIxGMOETP2Zlyw5RSH2I0HvG2V2EgAAAAAATZM3CJhIqhqsf22yMRjDhEz9mZcsOUUh9iNB7xtldhIeAUBNeSBBd2Vzb21lIEV2ZW50AABNASBjZW5uem5ldDRjZW5uem5ldC1ub2RlAQAAAC0AAAAtAAAARN9qy2iZB2CbAwAAADfjl_x8kfXkAQAAAED-OtQB-JWaBAAAANK8mJfu0I8VAgAAAPeLJ4vlP0VMAgAAAGh61ErTfwPCAQAAAMvKJeOfFCOHAgAAAKs8BXIpH-uLAQAAAO2ZxayyXu31AgAAAON3zpEWvLXxAQAAALydiZBPW5I_AQAAAM7H-5YxR_CFAQAAAHnG2ibx1xgwAQAAADfIuxNQqaKoAQAAADfoNPQzmLotAQAAAP9APz5JQ4NoAQAAABjvWKO2e6dwAQAAAAUAAAAAAAAE",
+          "signerPayload": "0x1e01404d7920417765736f6d65204576656e740000004d0100002d000000050000004d9337089848aa1aac7f6db23118c3844cfd99972c394521f62341ef1b6576124d9337089848aa1aac7f6db23118c3844cfd99972c394521f62341ef1b657612"
+        }
+      }
+    }
+  }
+}`}
+</textarea>
+
+We then need to sign the signerPayload with the correct private key, and submit the signature along with the transcation ID.
+
+### Query
+
+```graphql
+mutation ($transactionId: ID!, $signature: String) {
+  submitTransaction(transactionId: $transactionId, signature: $signature) {
+    status
+    result {
+      ... on TicketedEvent {
+        id
+        name
+      }
+    }
+  }
+}
+```
+
+### Variables
+
+<textarea>
+  {`{
+    "transactionId": "Q0VOTlpuZXRfTmlrYXU6VHJhbnNhY3Rpb246VGlja2V0ZWRFdmVudDosi4J4JIAzGa290SloNzTRohXJ6NsnRRdWtjlmJyYAU5NkzcImEiqGqx_bbIxGMOETP2Zlyw5RSH2I0HvG2V2EgAAAAAATZM3CJhIqhqsf22yMRjDhEz9mZcsOUUh9iNB7xtldhIeAUBNeSBBd2Vzb21lIEV2ZW50AABNASBjZW5uem5ldDRjZW5uem5ldC1ub2RlAQAAAC0AAAAtAAAARN9qy2iZB2CbAwAAADfjl_x8kfXkAQAAAED-OtQB-JWaBAAAANK8mJfu0I8VAgAAAPeLJ4vlP0VMAgAAAGh61ErTfwPCAQAAAMvKJeOfFCOHAgAAAKs8BXIpH-uLAQAAAO2ZxayyXu31AgAAAON3zpEWvLXxAQAAALydiZBPW5I_AQAAAM7H-5YxR_CFAQAAAHnG2ibx1xgwAQAAADfIuxNQqaKoAQAAADfoNPQzmLotAQAAAP9APz5JQ4NoAQAAABjvWKO2e6dwAQAAAAUAAAAAAAAE",
+    "signature": "0x012e968836e48b9589b1106679ccefd66261682657c2795338366790126d1f585d73cca2425aad60ed59d048786939f239298b29e5269065758c64712eeeb05f80"
+  }`}
+</textarea>
+
+### Response
+
+```json
+{
+  "data": {
+    "submitTransaction": {
+      "status": "Success",
+      "result": {
+        "id": "Q0VOTlpuZXRfTmlrYXU6VGlja2V0ZWRFdmVudDo3Ng==",
+        "name": "My Awesome Event"
+      }
+    }
+  }
+}
+```
+
+[Next: Create Tickets](./createTickets)

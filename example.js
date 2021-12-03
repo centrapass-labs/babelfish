@@ -12,18 +12,6 @@ const PHRASE =
 
 run(PHRASE, "My Event");
 
-function doGraphQL(graphql) {
-  var requestOptions = {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: graphql,
-    redirect: "follow",
-  };
-
-  return fetch("http://localhost:3000/api/graphql", requestOptions).then(
-    (response) => response.json()
-  );
-}
 async function run(phrase, eventName) {
   await cryptoUtil.cryptoWaitReady();
   const newPair = keyring.addFromUri(phrase);
@@ -34,8 +22,17 @@ async function run(phrase, eventName) {
    * Get Signing Payload and Transaction ID for the transaction to create an Ticket Event.
    */
   var getSigningPayload = JSON.stringify({
-    query:
-      "query($address: String!, $eventDetails: TicketedEventDetailsInput!) {\n  network(network: CENNZnet_Nikau) {\n    address(address: $address) {\n      address\n      createTicketedEvent(eventDetails: $eventDetails) {\n        id\n        signerPayload\n      }\n    }\n  }\n}",
+    query: `query($address: String!, $eventDetails: TicketedEventDetailsInput!) {
+ network(network: CENNZnet_Nikau) {
+   address(address: $address) {
+     address
+     createTicketedEvent(eventDetails: $eventDetails) {
+       id
+       signerPayload
+     }
+   }
+ }
+}`,
     variables: {
       address,
       eventDetails: { name: eventName },
@@ -69,25 +66,74 @@ async function run(phrase, eventName) {
   console.log("SIGNATURE:", signature, "\n");
 
   console.log("SUBMITTING");
-  var submitTranscation = JSON.stringify({
-    query:
-      "mutation($transcationId: ID!, $signature: String) {\n  submitTransaction(transcationId: $transcationId, signature: $signature) {\n    status\n  }\n}",
+  var submitTransaction = JSON.stringify({
+    query: `mutation($transactionId: ID!, $signature: String) {
+        submitTransaction(transactionId: $transactionId, signature: $signature) {
+             status
+             result {
+               ... on TicketedEvent {
+                 id
+                 createNewTicketType(quantity: 10, ticketType: {
+                  name: "General Admission",
+                  description: "Some basic ticket"
+
+                }) {
+                  id
+                  signerPayload
+                }
+               }
+             }
+             }
+            }`,
     variables: {
-      transcationId: id,
+      transactionId: id,
       signature,
     },
   });
 
+  const createEventTranscationRes = await doGraphQL(submitTransaction);
+
   const {
-    data: {
-      submitTransaction: { status },
+    data: { submitTransaction: res },
+  } = createEventTranscationRes;
+
+  console.log("IN BLOCK:", res);
+
+  const signature2 = u8aToHex(
+    newPair.sign(hexToU8a(res.result.createNewTicketType.signerPayload), {
+      withType: true,
+    })
+  );
+
+  var submitTransaction2 = JSON.stringify({
+    query: `mutation($transactionId: ID!, $signature: String) {
+        submitTransaction(transactionId: $transactionId, signature: $signature) {
+             status
+             result {
+               id
+             }
+             }
+            }`,
+    variables: {
+      transactionId: res.result.createNewTicketType.id,
+      signature: signature2,
     },
-  } = await doGraphQL(submitTranscation);
+  });
 
-  if (status === "pending") {
-    console.log("TRANSCATION SUBMITTED AND PENDING");
-    return;
-  }
+  const lol2 = await doGraphQL(submitTransaction2);
 
-  console.log("IN BLOCK:", status);
+  console.log(lol2);
+}
+
+function doGraphQL(graphql) {
+  var requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: graphql,
+    redirect: "follow",
+  };
+
+  return fetch("http://localhost:3000/api/graphql", requestOptions).then(
+    (response) => response.json()
+  );
 }

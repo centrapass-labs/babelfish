@@ -2,7 +2,7 @@ import { ApolloServer } from "apollo-server-micro";
 import { NextApiRequest, NextApiResponse } from "next";
 import Cors from "cors";
 import schema from "../../schema";
-import { mockAPI } from "./mocks";
+import { ApolloLogPlugin } from "apollo-log";
 
 import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core";
 import { createContext } from "../../schema/context";
@@ -31,7 +31,10 @@ const apolloServer = new ApolloServer({
   schema,
   context: createContext,
   introspection: true,
-  plugins: [ApolloServerPluginLandingPageGraphQLPlayground],
+  plugins: [
+    ApolloServerPluginLandingPageGraphQLPlayground,
+    // ApolloLogPlugin as any,
+  ],
 });
 
 export const config = {

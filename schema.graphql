@@ -14,6 +14,27 @@ type Address implements Node {
   """Unique identifier for the resource"""
   id: ID
 
+  """List all the Tickets held by this address."""
+  nfts(
+    """Returns the elements in the list that come after the specified cursor"""
+    after: String
+
+    """Returns the elements in the list that come before the specified cursor"""
+    before: String
+
+    """If supplied, filters by the specific event"""
+    event: String
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the last n elements from the list."""
+    last: Int
+
+    """If supplied, filters by the specific ticket type"""
+    ticketTypeId: String
+  ): NFTConnection
+
   """List all the Ticket Stubs held by this address."""
   ticketStubs(
     """Returns the elements in the list that come after the specified cursor"""
@@ -38,7 +59,7 @@ type Address implements Node {
     before: String
 
     """If supplied, filters by the specific event"""
-    event: String
+    eventId: String
 
     """Returns the first n elements from the list."""
     first: Int
@@ -51,16 +72,48 @@ type Address implements Node {
   ): TicketConnection
 }
 
-"""A CENNZnet Node"""
-type CENNZnetNode {
+"""
+A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar Date
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+
+"""Check the health status of Babelfish"""
+type Health {
+  status: String
+}
+
+scalar JSON
+
+type Mutation {
+  """Used to submit a transaction to the blockchain"""
+  submitTransaction(signature: String, transactionId: ID!): TransactionResult!
+}
+
+interface NFT implements Node {
+  """The name of NFT"""
+  description: String
+
+  """Unique identifier for the resource"""
+  id: ID
+
+  """The name of NFT"""
+  image: String
+  metadata: JSON
+
+  """The name of NFT"""
   name: String
 }
 
-type CENNZnetNodeConnection {
+type NFTConnection {
   """
   https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
   """
-  edges: [CENNZnetNodeEdge]
+  edges: [NFTEdge]
 
   """
   https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
@@ -69,27 +122,12 @@ type CENNZnetNodeConnection {
   totalCount: Int
 }
 
-type CENNZnetNodeEdge {
+type NFTEdge {
   """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
   cursor: String!
 
   """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
-  node: CENNZnetNode
-}
-
-"""
-A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
-"""
-scalar Date
-
-"""Check the health status of Babelfish"""
-type Health {
-  status: String
-}
-
-type Mutation {
-  """Used to submit a transaction to the blockchain"""
-  submitTransaction(signature: String, transactionId: ID!): TransactionResult!
+  node: NFT
 }
 
 """A Network/Ledger"""
@@ -100,24 +138,6 @@ type Network implements Node {
   """Unique identifier for the resource"""
   id: ID
   name: String
-
-  """Get the nodes in the network."""
-  nodes(
-    """Returns the elements in the list that come after the specified cursor"""
-    after: String
-
-    """Returns the elements in the list that come before the specified cursor"""
-    before: String
-
-    """Returns the first n elements from the list."""
-    first: Int
-
-    """Returns the last n elements from the list."""
-    last: Int
-  ): CENNZnetNodeConnection
-
-  """Get a ticketed event via its id."""
-  ticketedEvent(id: String!): TicketedEvent
 }
 
 """The different Ledgers BabelFish can connect to"""
@@ -161,10 +181,11 @@ type PageInfo {
 type Query {
   health: Health
   network(network: NetworkEnum!): Network
+  node(id: ID): Node
 }
 
 """A ticket for an Ticketed Event"""
-type Ticket {
+type Ticket implements NFT & Node {
   """
   Creates a Transaction for redeeming the ticket for an entry pass, this manifests as a burn event onchain
   """
@@ -172,7 +193,21 @@ type Ticket {
 
   """Creates a Transaction for transferring a Ticket to another address"""
   createTransferTransaction(toAddress: String!): Transaction
+
+  """The name of NFT"""
+  description: String
   event: TicketedEvent
+
+  """Unique identifier for the resource"""
+  id: ID
+
+  """The name of NFT"""
+  image: String
+  metadata: JSON
+
+  """The name of NFT"""
+  name: String
+  owner: Address
 
   """The type of a ticket IE General Admission, VIP, etc"""
   ticketType: TicketType
@@ -231,10 +266,15 @@ type TicketStubEdge {
 }
 
 """The type of a ticket IE General Admission, VIP, etc"""
-type TicketType {
+type TicketType implements Node {
+  """Create additional tickets of an existing ticket type"""
+  createAdditionalTickets(quantity: Int): Transaction
+
+  """Unique identifier for the resource"""
+  id: ID
+
   """The name of this ticket type: IE 'General Admission'"""
   name: String
-  ticketTypeId: ID
 
   """The event this type is associated with"""
   ticketedEvent: TicketedEvent
@@ -256,24 +296,24 @@ type TicketType {
 }
 
 input TicketTypeInput {
+  """The date and time of the event in ISO date format."""
+  dateTime: DateTime
   description: String
   fineprint: String
+  image: String
   name: String!
+
+  """The venue for the event. IE On an Island"""
+  venue: String
 }
 
 """An Event with Ticketed access."""
-type TicketedEvent {
-  """Create additional tickets of an existing ticket type"""
-  createAdditionalTickets(quantity: Int, ticketTypeId: String): Transaction
-
+type TicketedEvent implements Node {
   """Create a new Ticket Type IE VIP"""
-  createNewTicketType(quantity: Int, ticketType: TicketTypeInput): Transaction
+  createNewTicketType(quantity: Int!, ticketType: TicketTypeInput!): Transaction
 
-  """When the event is in ISO date format."""
-  dateTime: Date
-
-  """The description of the ticketed event."""
-  description: String
+  """Unique identifier for the resource"""
+  id: ID
 
   """The name of the the ticketed event."""
   name: String
@@ -316,9 +356,6 @@ type TicketedEvent {
     """If supplied, filters by the specific ticket type"""
     ticketTypeId: String
   ): TicketConnection
-
-  """The Venue of the ticket event."""
-  venue: String
 }
 
 """The details of your event."""
@@ -335,9 +372,11 @@ type Transaction implements Node {
 
   """Unique identifier for the resource"""
   id: ID
+  result: Node
 
   """The transaction data hex encoded."""
   signerPayload: String
+  status: String
 }
 
 type TransactionResult {

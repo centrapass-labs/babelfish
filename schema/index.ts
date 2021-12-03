@@ -20,28 +20,33 @@ import * as TicketedEvent from "./TicketedEvent";
 import * as Ticket from "./Ticket";
 import * as Address from "./Address";
 
-import { GraphQLDate } from "graphql-iso-date";
+import { GraphQLDate, GraphQLDateTime } from "graphql-iso-date";
 import {
   createGlobalId,
   getGlobalIdInfo,
   GlobalId,
 } from "../entities/entityHelpers";
+import { Text } from "@polkadot/types";
+import { GraphQLScalarType } from "graphql";
 
-/*
-TODO: 
-Add more fields on everything to bring it up to par with google/apple/general industry specs
-Add more fields
-remove some abgeuitity from the names
-fix some spelling
-touch up the mock data to make it more realisitic.
-*/
+const JSONScalar = new GraphQLScalarType({
+  name: "JSON",
+
+  serialize: (data: any) => data,
+  parseValue: (data: any) => data,
+});
 
 const GQLDate = asNexusMethod(GraphQLDate, "date");
+const GQLJSON = asNexusMethod(JSONScalar, "json");
+const GQLDateTime = asNexusMethod(GraphQLDateTime, "dateTime");
 
 const Node = interfaceType({
   name: "Node",
-  resolveType() {
-    return "Address";
+  resolveType({ id }) {
+    const { __network, __type, __localId } = getGlobalIdInfo(
+      id as GlobalId<any, any>
+    );
+    return __type;
   },
   definition(t) {
     t.id("id", { description: "Unique identifier for the resource" });
@@ -56,6 +61,35 @@ const TransactionResult = objectType({
   },
 });
 
+async function getTransaction(__network: string, hash: string, loop: boolean) {
+  const UnCoverEndpoint =
+    __network == "CENNZnet_Nikau"
+      ? "https://service.eks.centrality.me/"
+      : "https://service.eks.centralityapp.com/";
+
+  while (loop) {
+    // TODO: this may never end, yikes.
+    const Hey = await fetch(
+      UnCoverEndpoint + "cennznet-explorer-api/api/scan/extrinsic",
+      {
+        headers: {
+          accept: "application/json, text/plain, */*",
+          "content-type": "application/json;charset=UTF-8",
+        },
+        body: JSON.stringify({
+          hash,
+        }),
+        method: "POST",
+      }
+    );
+    const res = await Hey.json();
+    if (res.message !== "Not Found") {
+      return res;
+    }
+  }
+  return null;
+}
+
 const Mutation = extendType({
   type: "Mutation",
   definition(t) {
@@ -67,7 +101,7 @@ const Mutation = extendType({
         signature: stringArg(),
       },
       async resolve(_root, args, { instance }) {
-        const { __network, __type } = getGlobalIdInfo(
+        const { __network, __type, __localId } = getGlobalIdInfo(
           args.transactionId as GlobalId<any, any>
         );
 
@@ -93,7 +127,9 @@ const Mutation = extendType({
           "SignerPayload",
           Buffer.from(
             args.transactionId.replace(
-              Buffer.from(`${__network}:Transaction:`).toString("base64url"),
+              Buffer.from(`${__network}:Transaction:${__localId}:`).toString(
+                "base64url"
+              ),
 
               ""
             ),
@@ -114,18 +150,84 @@ const Mutation = extendType({
           signerPayload.toPayload()
         );
 
+        function handle(fnd: any) {
+          return new Promise((resolve, reject) => {
+            if (!fnd.data.success) {
+              reject(
+                new Error(
+                  JSON.stringify(
+                    JSON.parse(
+                      fnd.data.event.find(
+                        ({ event_id }: any) => event_id === "ExtrinsicFailed"
+                      ).params
+                    )
+                  )
+                )
+              );
+            }
+
+            if (__localId === "TicketedEvent") {
+              const [
+                { value: collectionId },
+                { value: collectionName },
+                { value: collectionOwner },
+              ] = JSON.parse(
+                fnd.data.event.find(
+                  ({ event_id }: any) => event_id === "CreateCollection"
+                ).params
+              );
+
+              resolve({
+                status: "Success",
+                result: instance.loadEntity(
+                  createGlobalId({
+                    __network,
+                    __type: __localId,
+                    __localId: collectionId,
+                  })
+                ),
+              });
+            } else {
+              resolve({
+                status: `${JSON.stringify(fnd.data.event)}`,
+              });
+            }
+          });
+        }
+        const found = await getTransaction(
+          __network,
+          extrinsic.hash.toHex(),
+          false
+        );
+
+        if (found) {
+          return handle(found);
+        }
+
         return Promise.race([
-          new Promise((resolve) => {
-            api.rpc.author.submitAndWatchExtrinsic(extrinsic, (result: any) => {
-              const done =
-                result.toHuman().InBlock || result.toHuman().Finalized;
-              if (done) {
-                resolve({
-                  status: `${done}`,
-                  result: null,
-                });
+          new Promise((resolve, reject) => {
+            api.rpc.author.submitAndWatchExtrinsic(
+              extrinsic,
+              async (result: any) => {
+                const done =
+                  result.toHuman().InBlock || result.toHuman().Finalized;
+                if (done) {
+                  if (
+                    __network !== "CENNZnet_Azalea" &&
+                    __network !== "CENNZnet_Nikau"
+                  ) {
+                    return reject(`${__network} not supported for this`);
+                  }
+
+                  const found = await getTransaction(
+                    __network,
+                    extrinsic.hash.toHex(),
+                    true
+                  );
+                  handle(found).then(resolve).catch(reject);
+                }
               }
-            });
+            );
           }),
           new Promise((cb) =>
             setTimeout(() => cb({ status: "pending", result: null }), 15000)
@@ -157,6 +259,8 @@ const Transaction = objectType({
     t.string("signerPayload", {
       description: "The transaction data hex encoded.",
     });
+    t.field("result", { type: Node });
+    t.string("status");
     t.field("expectedSigningAddress", {
       type: "Address",
       description:
@@ -198,29 +302,6 @@ const Network = objectType({
         ) as any;
       },
     });
-    t.field("ticketedEvent", {
-      args: {
-        id: nonNull(stringArg()),
-      },
-      description: "Get a ticketed event via its id.",
-      type: "TicketedEvent",
-      resolve() {
-        return {
-          name: "My Awesome Festival",
-        };
-      },
-    });
-    t.connectionField("nodes", {
-      type: CENNZNode,
-      description: "Get the nodes in the network.",
-      totalCount() {
-        // DEMO DATA
-        return 42;
-      },
-      nodes() {
-        return [{}];
-      },
-    });
   },
 });
 
@@ -232,6 +313,15 @@ const Query = queryType({
         return {
           status: "OK",
         };
+      },
+    });
+    t.field("node", {
+      type: Node,
+      args: {
+        id: idArg(),
+      },
+      resolve(_, args, { instance }) {
+        return instance.loadEntity(args.id as GlobalId<any, any>) as any;
       },
     });
     t.field("network", {
@@ -262,6 +352,8 @@ export default makeSchema({
     Node,
     Query,
     GQLDate,
+    GQLJSON,
+    GQLDateTime,
     Mutation,
     TicketStub,
     TicketedEvent,
@@ -288,6 +380,4 @@ export default makeSchema({
         schema: join(__dirname, "..", "schema.graphql"),
       }
     : {},
-  // or types: { Account, Node, Query }
-  // or types: [Account, [Node], { Query }]
 });

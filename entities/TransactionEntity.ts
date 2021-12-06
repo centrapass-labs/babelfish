@@ -23,17 +23,11 @@ const TransactionEntity = defineEntity(NetworkComponent, {
         { version: api.extrinsicVersion }
       );
 
-      const extrinsic = api.registry.createType(
-        "Extrinsic",
-        { method: signerPayload.method },
-        { version: api.extrinsicVersion }
-      );
-
       const UnCoverEndpoint =
         this.__network == "CENNZnet_Nikau"
           ? "https://service.eks.centrality.me/"
           : "https://service.eks.centralityapp.com/";
-      const Hey = await fetch(
+      const uncoverResponse = await fetch(
         UnCoverEndpoint + "cennznet-explorer-api/api/scan/extrinsics",
         {
           headers: {
@@ -49,7 +43,7 @@ const TransactionEntity = defineEntity(NetworkComponent, {
           method: "POST",
         }
       );
-      const res = await Hey.json();
+      const res = await uncoverResponse.json();
 
       const intrinsicWithNonce = res.data.extrinsics.find(
         ({ nonce }: any) => nonce == signerPayload.nonce
@@ -85,7 +79,7 @@ const TransactionEntity = defineEntity(NetworkComponent, {
           ? "https://service.eks.centrality.me/"
           : "https://service.eks.centralityapp.com/";
 
-      const Hey = await fetch(
+      const uncoverResponse = await fetch(
         UnCoverEndpoint + "cennznet-explorer-api/api/scan/extrinsic",
         {
           headers: {
@@ -98,7 +92,7 @@ const TransactionEntity = defineEntity(NetworkComponent, {
           method: "POST",
         }
       );
-      const fnd = await Hey.json();
+      const fnd = await uncoverResponse.json();
 
       if (this.__localId === "TicketedEvent") {
         const [
@@ -120,11 +114,36 @@ const TransactionEntity = defineEntity(NetworkComponent, {
         );
       }
       if (this.__localId === "TicketType") {
+        const [{ value: collectionId }, { value: seriesId }] = JSON.parse(
+          fnd.data.event.find(
+            ({ event_id }: any) => event_id === "CreateSeries"
+          ).params
+        );
+
         return this.load[this.__localId](
           createGlobalId({
             __network: this.__network,
             __type: this.__localId,
-            __localId: collectionId,
+            __localId: `${collectionId}/${seriesId}`,
+          })
+        );
+      }
+      if (this.__localId === "Transfer") {
+        const [
+          { value: fromAddress },
+          {
+            value: [tokenId],
+          },
+        ] = JSON.parse(
+          fnd.data.event.find(({ event_id }: any) => event_id === "Transfer")
+            .params
+        );
+
+        return this.load.Ticket(
+          createGlobalId({
+            __network: this.__network,
+            __type: "Ticket",
+            __localId: tokenId.join("/"),
           })
         );
       }

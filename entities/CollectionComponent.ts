@@ -19,10 +19,8 @@ const CollectionComponent = defineComponent<
     createTransaction: (input: {
       address: string;
       extrinsic: SubmittableExtrinsic<any, any>;
-      outputType?: string;
+      outputType: string;
     }) => Promise<{
-      //   expectedSigningAddress: { address: string };
-      //   signerPayload: any;
       id: string;
     }>;
   },

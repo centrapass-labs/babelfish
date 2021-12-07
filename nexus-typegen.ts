@@ -81,6 +81,17 @@ export interface NexusGenObjects {
     address?: string | null; // ID
     id?: string | null; // ID
   }
+  GenericNFT: { // root type
+    description?: string | null; // String
+    id?: string | null; // ID
+    image?: string | null; // String
+    metadata?: NexusGenScalars['JSON'] | null; // JSON
+    name?: string | null; // String
+  }
+  GenericNFTCollection: { // root type
+    id?: string | null; // ID
+    name?: string | null; // String
+  }
   Health: { // root type
     status?: string | null; // String
   }
@@ -159,8 +170,8 @@ export interface NexusGenObjects {
 }
 
 export interface NexusGenInterfaces {
-  NFT: NexusGenRootTypes['Ticket'];
-  Node: NexusGenRootTypes['Address'] | NexusGenRootTypes['Network'] | NexusGenRootTypes['Ticket'] | NexusGenRootTypes['TicketType'] | NexusGenRootTypes['TicketedEvent'] | NexusGenRootTypes['Transaction'];
+  NFT: NexusGenRootTypes['GenericNFT'] | NexusGenRootTypes['Ticket'];
+  Node: NexusGenRootTypes['Address'] | NexusGenRootTypes['GenericNFT'] | NexusGenRootTypes['GenericNFTCollection'] | NexusGenRootTypes['Network'] | NexusGenRootTypes['Ticket'] | NexusGenRootTypes['TicketType'] | NexusGenRootTypes['TicketedEvent'] | NexusGenRootTypes['Transaction'];
 }
 
 export interface NexusGenUnions {
@@ -173,11 +184,27 @@ export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars & NexusGenEnu
 export interface NexusGenFieldTypes {
   Address: { // field return type
     address: string | null; // ID
+    createGenericNFTCollection: NexusGenRootTypes['Transaction'] | null; // Transaction
     createTicketedEvent: NexusGenRootTypes['Transaction'] | null; // Transaction
     id: string | null; // ID
     nfts: NexusGenRootTypes['NFTConnection'] | null; // NFTConnection
     ticketStubs: NexusGenRootTypes['TicketStubConnection'] | null; // TicketStubConnection
     tickets: NexusGenRootTypes['TicketConnection'] | null; // TicketConnection
+  }
+  GenericNFT: { // field return type
+    createTransferTransaction: NexusGenRootTypes['Transaction'] | null; // Transaction
+    description: string | null; // String
+    id: string | null; // ID
+    image: string | null; // String
+    metadata: NexusGenScalars['JSON'] | null; // JSON
+    name: string | null; // String
+    owner: NexusGenRootTypes['Address'] | null; // Address
+  }
+  GenericNFTCollection: { // field return type
+    createUniqueNFT: NexusGenRootTypes['Transaction'] | null; // Transaction
+    id: string | null; // ID
+    name: string | null; // String
+    ticketTypes: Array<NexusGenRootTypes['TicketType'] | null> | null; // [TicketType]
   }
   Health: { // field return type
     status: string | null; // String
@@ -286,11 +313,27 @@ export interface NexusGenFieldTypes {
 export interface NexusGenFieldTypeNames {
   Address: { // field return type name
     address: 'ID'
+    createGenericNFTCollection: 'Transaction'
     createTicketedEvent: 'Transaction'
     id: 'ID'
     nfts: 'NFTConnection'
     ticketStubs: 'TicketStubConnection'
     tickets: 'TicketConnection'
+  }
+  GenericNFT: { // field return type name
+    createTransferTransaction: 'Transaction'
+    description: 'String'
+    id: 'ID'
+    image: 'String'
+    metadata: 'JSON'
+    name: 'String'
+    owner: 'Address'
+  }
+  GenericNFTCollection: { // field return type name
+    createUniqueNFT: 'Transaction'
+    id: 'ID'
+    name: 'String'
+    ticketTypes: 'TicketType'
   }
   Health: { // field return type name
     status: 'String'
@@ -398,6 +441,9 @@ export interface NexusGenFieldTypeNames {
 
 export interface NexusGenArgTypes {
   Address: {
+    createGenericNFTCollection: { // args
+      name: string; // String!
+    }
     createTicketedEvent: { // args
       eventDetails: NexusGenInputs['TicketedEventDetailsInput']; // TicketedEventDetailsInput!
     }
@@ -422,6 +468,17 @@ export interface NexusGenArgTypes {
       first?: number | null; // Int
       last?: number | null; // Int
       ticketTypeId?: string | null; // String
+    }
+  }
+  GenericNFT: {
+    createTransferTransaction: { // args
+      toAddress: string; // String!
+    }
+  }
+  GenericNFTCollection: {
+    createUniqueNFT: { // args
+      attributes?: NexusGenScalars['JSON'] | null; // JSON
+      metadata: NexusGenScalars['JSON']; // JSON!
     }
   }
   Mutation: {
@@ -482,12 +539,14 @@ export interface NexusGenArgTypes {
 }
 
 export interface NexusGenAbstractTypeMembers {
-  NFT: "Ticket"
-  Node: "Address" | "Network" | "Ticket" | "TicketType" | "TicketedEvent" | "Transaction"
+  NFT: "GenericNFT" | "Ticket"
+  Node: "Address" | "GenericNFT" | "GenericNFTCollection" | "Network" | "Ticket" | "TicketType" | "TicketedEvent" | "Transaction"
 }
 
 export interface NexusGenTypeInterfaces {
   Address: "Node"
+  GenericNFT: "NFT" | "Node"
+  GenericNFTCollection: "Node"
   Network: "Node"
   Ticket: "NFT" | "Node"
   TicketType: "Node"

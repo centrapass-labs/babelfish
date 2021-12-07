@@ -7,6 +7,11 @@ type Address implements Node {
   address: ID
 
   """
+  Creates a Transaction for signing that will create a new collection that has NFTs
+  """
+  createGenericNFTCollection(name: String!): Transaction
+
+  """
   Creates a Transaction for signing that will create a new Event that can have tickets.
   """
   createTicketedEvent(eventDetails: TicketedEventDetailsInput!): Transaction
@@ -81,6 +86,41 @@ scalar Date
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
 scalar DateTime
+
+"""A Generic NFT"""
+type GenericNFT implements NFT & Node {
+  """Creates a Transaction for transferring a NFT to another address"""
+  createTransferTransaction(toAddress: String!): Transaction
+
+  """The name of NFT"""
+  description: String
+
+  """Unique identifier for the resource"""
+  id: ID
+
+  """The name of NFT"""
+  image: String
+  metadata: JSON
+
+  """The name of NFT"""
+  name: String
+  owner: Address
+}
+
+"""A collection of Generic NFTs"""
+type GenericNFTCollection implements Node {
+  """Create a new Unique NFT"""
+  createUniqueNFT(attributes: JSON, metadata: JSON!): Transaction
+
+  """Unique identifier for the resource"""
+  id: ID
+
+  """The name of the collection."""
+  name: String
+
+  """The different types of tickets"""
+  ticketTypes: [TicketType]
+}
 
 """Check the health status of Babelfish"""
 type Health {

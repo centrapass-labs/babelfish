@@ -1,0 +1,187 @@
+To create a Generic NFT you first need to create a new collection.
+
+to do this first you must create a new collection.
+
+## GraphQL Query
+
+```graphql
+query ($address: String!, $name: String!) {
+  network(network: CENNZnet_Nikau) {
+    address(address: $address) {
+      address
+      createGenericNFTCollection(name: $name) {
+        signerPayload
+        id
+      }
+    }
+  }
+}
+```
+
+## Variables
+
+```json
+{
+  "address": "5G6L4FqzKtpe9T48eUK5fTrfM9znsmPGKNrxcynaw2hCfRoL",
+  "name": "My Collection"
+}
+```
+
+## Response
+
+<textarea>
+{{`
+{
+  "data": {
+    "network": {
+      "address": {
+        "address": "5G6L4FqzKtpe9T48eUK5fTrfM9znsmPGKNrxcynaw2hCfRoL",
+        "createGenericNFTCollection": {
+          "signerPayload": "0x1e01344d7920436f6c6c656374696f6e000000650100002d000000050000004d9337089848aa1aac7f6db23118c3844cfd99972c394521f62341ef1b6576124d9337089848aa1aac7f6db23118c3844cfd99972c394521f62341ef1b657612",
+          "id": "Q0VOTlpuZXRfTmlrYXU6VHJhbnNhY3Rpb246R2VuZXJpY05GVENvbGxlY3Rpb246si4J4JIAzGa290SloNzTRohXJ6NsnRRdWtjlmJyYAU5NkzcImEiqGqx_bbIxGMOETP2Zlyw5RSH2I0HvG2V2EgAAAAAATZM3CJhIqhqsf22yMRjDhEz9mZcsOUUh9iNB7xtldhIeATRNeSBDb2xsZWN0aW9uAABlASBjZW5uem5ldDRjZW5uem5ldC1ub2RlAQAAAC0AAAAtAAAARN9qy2iZB2CbAwAAADfjl_x8kfXkAQAAAED-OtQB-JWaBAAAANK8mJfu0I8VAgAAAPeLJ4vlP0VMAgAAAGh61ErTfwPCAQAAAMvKJeOfFCOHAgAAAKs8BXIpH-uLAQAAAO2ZxayyXu31AgAAAON3zpEWvLXxAQAAALydiZBPW5I_AQAAAM7H-5YxR_CFAQAAAHnG2ibx1xgwAQAAADfIuxNQqaKoAQAAADfoNPQzmLotAQAAAP9APz5JQ4NoAQAAABjvWKO2e6dwAQAAAAUAAAAAAAAE"
+        }
+      }
+    }
+  }
+}
+`}}
+</textarea>
+
+We can then take the signers payload and sign it. An then use the submitTranscation mutation to submit the transcation.
+
+## GraphQL Mutation
+
+```graphql
+mutation ($transactionId: ID!, $signature: String!) {
+  submitTransaction(transactionId: $transactionId, signature: $signature) {
+    status
+    result {
+      id
+      ... on GenericNFTCollection {
+        name
+      }
+    }
+  }
+}
+```
+
+## Variables
+
+<textarea>
+  {`{
+  "transactionId": "Q0VOTlpuZXRfTmlrYXU6VHJhbnNhY3Rpb246R2VuZXJpY05GVENvbGxlY3Rpb246si4J4JIAzGa290SloNzTRohXJ6NsnRRdWtjlmJyYAU5NkzcImEiqGqx_bbIxGMOETP2Zlyw5RSH2I0HvG2V2EgAAAAAATZM3CJhIqhqsf22yMRjDhEz9mZcsOUUh9iNB7xtldhIeATRNeSBDb2xsZWN0aW9uAABlASBjZW5uem5ldDRjZW5uem5ldC1ub2RlAQAAAC0AAAAtAAAARN9qy2iZB2CbAwAAADfjl_x8kfXkAQAAAED-OtQB-JWaBAAAANK8mJfu0I8VAgAAAPeLJ4vlP0VMAgAAAGh61ErTfwPCAQAAAMvKJeOfFCOHAgAAAKs8BXIpH-uLAQAAAO2ZxayyXu31AgAAAON3zpEWvLXxAQAAALydiZBPW5I_AQAAAM7H-5YxR_CFAQAAAHnG2ibx1xgwAQAAADfIuxNQqaKoAQAAADfoNPQzmLotAQAAAP9APz5JQ4NoAQAAABjvWKO2e6dwAQAAAAUAAAAAAAAE",
+  "signature": "0x01e8e5627d80d31326029e21f612f0feefa8869df1750df34973a095dc14704a7e664e4a3f12e585997cc939911b2a48ca9cecb5dd669b5c4d86a38feaed77e98d"
+}`}
+</textarea>
+
+## Response
+
+```json
+{
+  "data": {
+    "submitTransaction": {
+      "status": "Success",
+      "result": {
+        "id": "Q0VOTlpuZXRfTmlrYXU6R2VuZXJpY05GVENvbGxlY3Rpb246Nzg=",
+        "name": "My Collection"
+      }
+    }
+  }
+}
+```
+
+After creating the Collection the next step is to create your first NFT. We can do this on the Generic Collection node.
+
+## GraphQL
+
+```graphql
+query ($collectionId: ID!, $metadata: JSON!) {
+  node(id: $collectionId) {
+    ... on GenericNFTCollection {
+      createUniqueNFT(metadata: $metadata) {
+        id
+        signerPayload
+      }
+    }
+  }
+}
+```
+
+## Variables
+
+```json
+{
+  "collectionId": "Q0VOTlpuZXRfTmlrYXU6R2VuZXJpY05GVENvbGxlY3Rpb246Nzg=",
+  "metadata": {
+    "name": "My awesome NFT",
+    "description": "This NFT awesome",
+    "image": "ipfs://Qmdzs43nvc8YRKEvqPxB9judh7dHfUK1HB5QMtZPr24s8v"
+  }
+}
+```
+
+## Response
+
+<textarea>
+  {`{
+  "data": {
+    "node": {
+      "createUniqueNFT": {
+        "id": "Q0VOTlpuZXRfTmlrYXU6VHJhbnNhY3Rpb246R2VuZXJpY05GVDosi4J4JIAzGa290SloNzTRohXJ6NsnRRdWtjlmJyYAU5NkzcImEiqGqx_bbIxGMOETP2Zlyw5RSH2I0HvG2V2EgAAAAAATZM3CJhIqhqsf22yMRjDhEz9mZcsOUUh9iNB7xtldhIeAk4AAAAAAAHUaXBmczovL1FtU2F3dkR0ZnRObnJHelF2aWpreEpuMXNuMjZjWHljbzc1RmIyRHFVR3R5blgAaQEgY2VubnpuZXQ0Y2VubnpuZXQtbm9kZQEAAAAtAAAALQAAAETfastomQdgmwMAAAA345f8fJH15AEAAABA_jrUAfiVmgQAAADSvJiX7tCPFQIAAAD3iyeL5T9FTAIAAABoetRK038DwgEAAADLyiXjnxQjhwIAAACrPAVyKR_riwEAAADtmcWssl7t9QIAAADjd86RFry18QEAAAC8nYmQT1uSPwEAAADOx_uWMUfwhQEAAAB5xtom8dcYMAEAAAA3yLsTUKmiqAEAAAA36DT0M5i6LQEAAAD_QD8-SUODaAEAAAAY71ijtnuncAEAAAAFAAAAAAAABA",
+        "signerPayload": "0x1e024e000000000001d4697066733a2f2f516d53617776447466744e6e72477a5176696a6b784a6e31736e3236635879636f37354662324471554774796e580000690100002d000000050000004d9337089848aa1aac7f6db23118c3844cfd99972c394521f62341ef1b6576124d9337089848aa1aac7f6db23118c3844cfd99972c394521f62341ef1b657612"
+      }
+    }
+  }
+}`}
+</textarea>
+
+As before we need to sign the payload and submit it with the ID.
+
+## GraphQL Mutation
+
+```graphql
+mutation ($transactionId: ID!, $signature: String!) {
+  submitTransaction(transactionId: $transactionId, signature: $signature) {
+    status
+    result {
+      id
+      ... on GenericNFT {
+        name
+        metadata
+      }
+    }
+  }
+}
+```
+
+## Variables
+
+<textarea>
+  {`{
+  "transactionId": "Q0VOTlpuZXRfTmlrYXU6VHJhbnNhY3Rpb246R2VuZXJpY05GVDosi4J4JIAzGa290SloNzTRohXJ6NsnRRdWtjlmJyYAU5NkzcImEiqGqx_bbIxGMOETP2Zlyw5RSH2I0HvG2V2EgAAAAAATZM3CJhIqhqsf22yMRjDhEz9mZcsOUUh9iNB7xtldhIeAk4AAAAAAAHUaXBmczovL1FtU2F3dkR0ZnRObnJHelF2aWpreEpuMXNuMjZjWHljbzc1RmIyRHFVR3R5blgAbQEgY2VubnpuZXQ0Y2VubnpuZXQtbm9kZQEAAAAtAAAALQAAAETfastomQdgmwMAAAA345f8fJH15AEAAABA_jrUAfiVmgQAAADSvJiX7tCPFQIAAAD3iyeL5T9FTAIAAABoetRK038DwgEAAADLyiXjnxQjhwIAAACrPAVyKR_riwEAAADtmcWssl7t9QIAAADjd86RFry18QEAAAC8nYmQT1uSPwEAAADOx_uWMUfwhQEAAAB5xtom8dcYMAEAAAA3yLsTUKmiqAEAAAA36DT0M5i6LQEAAAD_QD8-SUODaAEAAAAY71ijtnuncAEAAAAFAAAAAAAABA",
+  "signature": "0x018290ee8ed7abe91da8cc4af961f782fa2addc11b7b9a742c04c8e93e33e93a31c5b04af7d8910beda786df0eb1b86e8590d06406e1c558cba6c9e34d770afb89"
+}`}
+</textarea>
+
+## Response
+
+```json
+{
+  "data": {
+    "submitTransaction": {
+      "status": "Success",
+      "result": {
+        "id": "Q0VOTlpuZXRfTmlrYXU6R2VuZXJpY05GVDo3OC8xLzA=",
+        "name": "My awesome NFT",
+        "metadata": {
+          "name": "My awesome NFT",
+          "description": "This NFT awesome",
+          "image": "ipfs://Qmdzs43nvc8YRKEvqPxB9judh7dHfUK1HB5QMtZPr24s8v"
+        }
+      }
+    }
+  }
+}
+```
+
+Whoop you have created your First NFT!

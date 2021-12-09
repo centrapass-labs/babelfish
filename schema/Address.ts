@@ -98,5 +98,18 @@ export const Address = objectType({
           .createTicketedEvent({ name: args.eventDetails.name });
       },
     });
+    t.field("createGenericNFTCollection", {
+      description:
+        "Creates a Transaction for signing that will create a new collection that has NFTs",
+      type: "Transaction",
+      args: {
+        name: nonNull(stringArg()),
+      },
+      resolve(source, args, context) {
+        return context.instance.load
+          .Address(source.id as GlobalId<any, "Address">)
+          .createGenericNFTCollection({ name: args.name });
+      },
+    });
   },
 });

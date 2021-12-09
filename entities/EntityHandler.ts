@@ -5,6 +5,8 @@ import AddressEntity from "./AddressEntity";
 import TicketedEventEntity from "./TicketedEventEntity";
 import TransactionEntity from "./TransactionEntity";
 import TicketTypeEntity from "./TicketTypeEntity";
+import GenericNFTCollectionEntity from "./GenericNFTCollectionEntity";
+import GenericNFTEntity from "./GenericNFTEntity";
 
 export function createInstance() {
   return createWorldInstance({}, [
@@ -14,5 +16,7 @@ export function createInstance() {
     TicketedEventEntity,
     TransactionEntity,
     TicketTypeEntity,
+    GenericNFTCollectionEntity,
+    GenericNFTEntity,
   ]);
 }

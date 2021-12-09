@@ -8,7 +8,7 @@ const pinataSDK = require("@pinata/sdk");
 
 // TODO: these are my personal, ultimately it doesnt matter IPFS is IPFS.
 // We should really host our own node, instead of Pinata, but works for now.
-const pinata = pinataSDK(
+export const pinata = pinataSDK(
   "fca63a789236cd6c9255",
   "f5e44f84fc2fcd66af7568146f951ffd3fe0bba8c629653cddce996c0edb2342"
 );

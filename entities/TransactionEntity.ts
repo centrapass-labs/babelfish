@@ -94,7 +94,10 @@ const TransactionEntity = defineEntity(NetworkComponent, {
       );
       const fnd = await uncoverResponse.json();
 
-      if (this.__localId === "TicketedEvent") {
+      if (
+        this.__localId === "TicketedEvent" ||
+        this.__localId === "GenericNFTCollection"
+      ) {
         const [
           { value: collectionId },
           { value: collectionName },
@@ -113,6 +116,7 @@ const TransactionEntity = defineEntity(NetworkComponent, {
           })
         );
       }
+
       if (this.__localId === "TicketType") {
         const [{ value: collectionId }, { value: seriesId }] = JSON.parse(
           fnd.data.event.find(
@@ -125,6 +129,20 @@ const TransactionEntity = defineEntity(NetworkComponent, {
             __network: this.__network,
             __type: this.__localId,
             __localId: `${collectionId}/${seriesId}`,
+          })
+        );
+      }
+      if (this.__localId === "GenericNFT") {
+        const [{ value: fromAddress }, { value: tokenId }] = JSON.parse(
+          fnd.data.event.find(({ event_id }: any) => event_id === "CreateToken")
+            .params
+        );
+
+        return this.load[this.__localId](
+          createGlobalId({
+            __network: this.__network,
+            __type: this.__localId,
+            __localId: tokenId.join("/"),
           })
         );
       }

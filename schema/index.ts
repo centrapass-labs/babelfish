@@ -28,6 +28,7 @@ import {
 } from "../entities/entityHelpers";
 import { Text } from "@polkadot/types";
 import { GraphQLScalarType } from "graphql";
+import { GenericNFT, GenericNFTCollection } from "./GenericNFT";
 
 const JSONScalar = new GraphQLScalarType({
   name: "JSON",
@@ -166,7 +167,10 @@ const Mutation = extendType({
               );
             }
 
-            if (__localId === "TicketedEvent") {
+            if (
+              __localId === "TicketedEvent" ||
+              __localId === "GenericNFTCollection"
+            ) {
               const [
                 { value: collectionId },
                 { value: collectionName },
@@ -220,6 +224,23 @@ const Mutation = extendType({
                   createGlobalId({
                     __network,
                     __type: "Ticket",
+                    __localId: tokenId.join("/"),
+                  })
+                ),
+              });
+            } else if (__localId === "GenericNFT") {
+              const [{ value: fromAddress }, { value: tokenId }] = JSON.parse(
+                fnd.data.event.find(
+                  ({ event_id }: any) => event_id === "CreateToken"
+                ).params
+              );
+
+              resolve({
+                status: "Success",
+                result: instance.loadEntity(
+                  createGlobalId({
+                    __network,
+                    __type: __localId,
                     __localId: tokenId.join("/"),
                   })
                 ),
@@ -402,6 +423,8 @@ export default makeSchema({
     Ticket,
     Transaction,
     Address,
+    GenericNFTCollection,
+    GenericNFT,
   ],
   plugins: [
     connectionPlugin({

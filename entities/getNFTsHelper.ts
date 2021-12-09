@@ -98,7 +98,7 @@ export async function getNFTs(args: {
             image: metadata.image,
             id: createGlobalId({
               __network: args.network,
-              __type: metadata.type || "NFT",
+              __type: metadata.type || "GenericNFT",
               __localId: `${element.tokenId.collectionId}/${element.tokenId.seriesId}/${element.tokenId.serialNumber}`,
             }),
           });

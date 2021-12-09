@@ -1,5 +1,5 @@
 import { NexusGenObjects } from "../nexus-typegen";
-import { createGlobalId, defineEntity } from "./entityHelpers";
+import { createGlobalId, defineEntity, getGlobalIdInfo } from "./entityHelpers";
 import NetworkComponent from "./NetworkComponent";
 import NFTComponent from "./NFTComponent";
 
@@ -31,8 +31,9 @@ const TicketEntity = defineEntity(NetworkComponent, NFTComponent, {
       const api = await this.apiConnector();
       const tokenOwner = await this.tokenOwner();
       return this.createTransaction({
-        address: tokenOwner.address,
+        address: getGlobalIdInfo(tokenOwner.id).__localId,
         extrinsic: api.tx.nft.burn(this.__localId),
+        outputType: "Redeem",
       });
     },
   },

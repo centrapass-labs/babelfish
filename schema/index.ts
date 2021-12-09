@@ -69,7 +69,7 @@ async function getTransaction(__network: string, hash: string, loop: boolean) {
 
   while (loop) {
     // TODO: this may never end, yikes.
-    const Hey = await fetch(
+    const uncoverResponse = await fetch(
       UnCoverEndpoint + "cennznet-explorer-api/api/scan/extrinsic",
       {
         headers: {
@@ -82,7 +82,7 @@ async function getTransaction(__network: string, hash: string, loop: boolean) {
         method: "POST",
       }
     );
-    const res = await Hey.json();
+    const res = await uncoverResponse.json();
     if (res.message !== "Not Found") {
       return res;
     }
@@ -187,6 +187,48 @@ const Mutation = extendType({
                   })
                 ),
               });
+            } else if (__localId === "TicketType") {
+              const [{ value: collectionId }, { value: seriesId }] = JSON.parse(
+                fnd.data.event.find(
+                  ({ event_id }: any) => event_id === "CreateSeries"
+                ).params
+              );
+              resolve({
+                status: "Success",
+                result: instance.loadEntity(
+                  createGlobalId({
+                    __network,
+                    __type: __localId,
+                    __localId: `${collectionId}/${seriesId}`,
+                  })
+                ),
+              });
+            } else if (__localId === "Transfer") {
+              const [
+                { value: fromAddress },
+                {
+                  value: [tokenId],
+                },
+              ] = JSON.parse(
+                fnd.data.event.find(
+                  ({ event_id }: any) => event_id === "Transfer"
+                ).params
+              );
+              resolve({
+                status: "Success",
+                result: instance.loadEntity(
+                  createGlobalId({
+                    __network,
+                    __type: "Ticket",
+                    __localId: tokenId.join("/"),
+                  })
+                ),
+              });
+            } else if (__localId === "Burn") {
+              resolve({
+                status: "Success",
+                result: null,
+              });
             } else {
               resolve({
                 status: `${JSON.stringify(fnd.data.event)}`,
@@ -206,9 +248,9 @@ const Mutation = extendType({
 
         return Promise.race([
           new Promise((resolve, reject) => {
-            api.rpc.author.submitAndWatchExtrinsic(
-              extrinsic,
-              async (result: any) => {
+            api.rpc.author
+              .submitAndWatchExtrinsic(extrinsic, async (result: any) => {
+                console.log("result", result);
                 const done =
                   result.toHuman().InBlock || result.toHuman().Finalized;
                 if (done) {
@@ -226,8 +268,8 @@ const Mutation = extendType({
                   );
                   handle(found).then(resolve).catch(reject);
                 }
-              }
-            );
+              })
+              .catch((err: any) => reject(err));
           }),
           new Promise((cb) =>
             setTimeout(() => cb({ status: "pending", result: null }), 15000)

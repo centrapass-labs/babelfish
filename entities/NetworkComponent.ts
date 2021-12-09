@@ -19,10 +19,8 @@ const NetworkComponent = defineComponent<
     createTransaction: (input: {
       address: string;
       extrinsic: SubmittableExtrinsic<any, any>;
-      outputType?: string;
+      outputType: string;
     }) => Promise<{
-      // expectedSigningAddress: { address: string };
-      // signerPayload: any;
       id: string;
     }>;
   }
@@ -59,15 +57,6 @@ const NetworkComponent = defineComponent<
         runtimeVersion: api.runtimeVersion,
         signedExtensions: api.registry.signedExtensions,
       });
-
-      const signerPayloadData = u8aToHex(
-        api.registry
-          .createType("ExtrinsicPayload", signerPayload.toPayload(), {
-            version: api.extrinsicVersion,
-          })
-          // NOTE Explicitly pass the bare flag so the method is encoded un-prefixed (non-decodable, for signing only)
-          .toU8a({ method: true })
-      );
 
       const id =
         Buffer.from(`${this.__network}:Transaction:${outputType}:`).toString(

@@ -77,10 +77,12 @@ export async function getNFTs(args: {
             element.tokenId.seriesId
           );
         }
-        const b = hexToString((await c[element.tokenId.seriesId]).toHex());
+        const metadataURL = hexToString(
+          (await c[element.tokenId.seriesId]).toHex()
+        );
         const ipfsHash =
           /Qm[1-9A-HJ-NP-Za-km-z]{44,}|b[A-Za-z2-7]{58,}|B[A-Z2-7]{58,}|z[1-9A-HJ-NP-Za-km-z]{48,}|F[0-9A-F]{50,}/.exec(
-            b
+            metadataURL
           );
         if (ipfsHash && ipfsHash.length) {
           const metadata = await getIPFSMeta(ipfsHash[0]);

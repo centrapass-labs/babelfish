@@ -219,7 +219,7 @@ const Mutation = extendType({
                 result: instance.loadEntity(
                   createGlobalId({
                     __network,
-                    __type: __localId,
+                    __type: "Ticket",
                     __localId: tokenId.join("/"),
                   })
                 ),

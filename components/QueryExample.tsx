@@ -8,7 +8,6 @@ import Input from "./Input";
 
 const keyring = new Keyring({ type: "sr25519" });
 
-// Some mnemonic phrase
 const PHRASE =
   "copper veteran indoor satoshi enroll girl reveal leisure normal battle equal wise";
 
@@ -30,7 +29,6 @@ function doGraphQL(query: string, variables: any) {
 }
 
 var get = function (obj: any, pathString: string) {
-  // Cache the current object
   if (!obj) {
     return null;
   }
@@ -38,12 +36,8 @@ var get = function (obj: any, pathString: string) {
 
   const path = pathString.split(".");
 
-  // For each item in the path, dig into the object
   for (var i = 0; i < path.length; i++) {
-    // If the item isn't found, return the default (or null)
     if (!current[path[i]]) return null;
-
-    // Otherwise, update the current  value
     current = current[path[i]];
   }
 

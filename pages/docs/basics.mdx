@@ -1,0 +1,14 @@
+Babelfish is a graphQL server, that follows the Relay Specs. Every ID is globally unique, and every object with an ID can be refetched using the Node query.
+
+```graphQL
+
+{
+    node(id: "A previously fetched ID") {
+        __typename
+        ... on TypeIExpect {
+            stuff i want.
+        }
+    }
+}
+
+```

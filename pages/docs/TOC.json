@@ -1,6 +1,10 @@
 {
   "pages": [
     {
+      "name": "Basics",
+      "slug": "basics"
+    },
+    {
       "name": "Create Event",
       "slug": "createEvent"
     },

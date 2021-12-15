@@ -2,9 +2,12 @@ The redeem procces works by under the hood burning the ticket. By burning the ti
 you are the one that wants the ticket. Think of this like the Checkin proccess before a flight, this burning
 of the ticket is you saying yes, I'm physically attending. You can then either use the fact that you burnt the ticket
 at the door, or have a secondary proccess where you issue Verificable Credentials to those who have burnt their ticket.
+For the bellow Query to work you must replace the ticket ID with a ticket youve created.
 
-```graphql
-query ($ticketId: ID!) {
+import QueryExample from "../../components/QueryExample";
+
+<QueryExample
+  query={`query ($ticketId: ID!) {
   node(id: $ticketId) {
     ... on Ticket {
       createRedeemTransaction {
@@ -16,61 +19,16 @@ query ($ticketId: ID!) {
       }
     }
   }
-}
-```
-
-```json
-{
-  "ticketId": "Q0VOTlpuZXRfTmlrYXU6VGlja2V0Ojc2LzEvMQ=="
-}
-```
-
-<textarea>
-  {`{
-  "data": {
-    "node": {
-      "createRedeemTransaction": {
-        "id": "Q0VOTlpuZXRfTmlrYXU6VHJhbnNhY3Rpb246QnVybjosi4J4JIAzGa290SloNzTRohXJ6NsnRRdWtjlmJyYAU5NkzcImEiqGqx_bbIxGMOETP2Zlyw5RSH2I0HvG2V2EgAAAAAATZM3CJhIqhqsf22yMRjDhEz9mZcsOUUh9iNB7xtldhIeB0wAAAABAAAAAQAAAGEBIGNlbm56bmV0NGNlbm56bmV0LW5vZGUBAAAALQAAAC0AAABE32rLaJkHYJsDAAAAN-OX_HyR9eQBAAAAQP461AH4lZoEAAAA0ryYl-7QjxUCAAAA94sni-U_RUwCAAAAaHrUStN_A8IBAAAAy8ol458UI4cCAAAAqzwFcikf64sBAAAA7ZnFrLJe7fUCAAAA43fOkRa8tfEBAAAAvJ2JkE9bkj8BAAAAzsf7ljFH8IUBAAAAecbaJvHXGDABAAAAN8i7E1CpoqgBAAAAN-g09DOYui0BAAAA_0A_PklDg2gBAAAAGO9Yo7Z7p3ABAAAABQAAAAAAAAQ",
-        "signerPayload": "0x1e074c000000010000000100000000610100002d000000050000004d9337089848aa1aac7f6db23118c3844cfd99972c394521f62341ef1b6576124d9337089848aa1aac7f6db23118c3844cfd99972c394521f62341ef1b657612",
-        "expectedSigningAddress": {
-          "address": "5G6L4FqzKtpe9T48eUK5fTrfM9znsmPGKNrxcynaw2hCfRoL"
-        }
-      }
-    }
-  }
 }`}
-
-</textarea>
-
-We then need to sign the signerPayload with the correct private key, and submit the signature along with the transcation ID.
-
-```graphql
-mutation ($transactionId: ID!, $signature: String) {
+  path="data.node.createRedeemTransaction"
+  variables={{
+    ticketId: "Q0VOTlpuZXRfTmlrYXU6VGlja2V0Ojc2LzEvMQ==",
+  }}
+  mutation={`mutation ($transactionId: ID!, $signature: String) {
   submitTransaction(transactionId: $transactionId, signature: $signature) {
     status
   }
-}
-```
-
-Variables
-
-<textarea>
-  {`{
-	  "transactionId": "Q0VOTlpuZXRfTmlrYXU6VHJhbnNhY3Rpb246QnVybjosi4J4JIAzGa290SloNzTRohXJ6NsnRRdWtjlmJyYAU5NkzcImEiqGqx_bbIxGMOETP2Zlyw5RSH2I0HvG2V2EgAAAAAATZM3CJhIqhqsf22yMRjDhEz9mZcsOUUh9iNB7xtldhIeB0wAAAABAAAAAQAAAGEBIGNlbm56bmV0NGNlbm56bmV0LW5vZGUBAAAALQAAAC0AAABE32rLaJkHYJsDAAAAN-OX_HyR9eQBAAAAQP461AH4lZoEAAAA0ryYl-7QjxUCAAAA94sni-U_RUwCAAAAaHrUStN_A8IBAAAAy8ol458UI4cCAAAAqzwFcikf64sBAAAA7ZnFrLJe7fUCAAAA43fOkRa8tfEBAAAAvJ2JkE9bkj8BAAAAzsf7ljFH8IUBAAAAecbaJvHXGDABAAAAN8i7E1CpoqgBAAAAN-g09DOYui0BAAAA_0A_PklDg2gBAAAAGO9Yo7Z7p3ABAAAABQAAAAAAAAQ",
-		"signature": "0x011eb520d312cf8e235eb76cf941718cce5764201ed48d461d603e29a59e30280ecadbaa5fcb2f61646b8df230ab0386f34aa8fb620ab6e4791d4e47bfd913e283"
 }`}
-</textarea>
-
-Result
-
-```json
-{
-  "data": {
-    "submitTransaction": {
-      "status": "Success"
-    }
-  }
-}
-```
+/>
 
 The ticket has been succesfully burnt, a Verifiable Credentials could now be created for the customer.

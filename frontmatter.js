@@ -35,34 +35,28 @@ module.exports = () => (tree, file) => {
   //         };
 
   //   tree.children = updateElement(tree.children);
-  //   tree.children.unshift(
-  //     {
-  //       type: "import",
-  //       value: `
-  //       import { Page } from "../undesign/Page";
-  //       `,
-  //     },
-  //     {
-  //       type: "import",
-  //       value: `
-  //       import { Link } from "../undesign/Link";
-  //       `,
-  //     },
-  //     {
-  //       type: "jsx",
-  //       value: `
-  //         <Page version={"${package.version}"}>
-  //         `,
-  //     }
-  //   );
+  tree.children.unshift(
+    {
+      type: "import",
+      value: `
+        import  Page  from "../../components/DocPage";
+        `,
+    },
+    {
+      type: "jsx",
+      value: `
+          <Page version={"${package.version}"}>
+          `,
+    }
+  );
 
-  //   tree.children.push({
-  //     type: "jsx",
-  //     value: `
+  tree.children.push({
+    type: "jsx",
+    value: `
 
-  //         </Page>
-  //         `,
-  //   });
+          </Page>
+          `,
+  });
 
   // Step 1: Convert frontmatter to JS object and push to document tree
   tree.children.push({

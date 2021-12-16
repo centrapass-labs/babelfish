@@ -1,9 +1,11 @@
 # Create Tickets
 
-After you created the event you can use the event id for querying and to create tickets on the event.
+After you created the event you can use the event id for querying and to create tickets on the event. You can modify the Variables bellow and put the Event ID of the event you created in the previous page.
 
-```graphql
-query ($eventId: ID!, $quantity: Int!, $ticketType: TicketTypeInput!) {
+import QueryExample from "../../components/QueryExample";
+
+<QueryExample
+  query={`query ($eventId: ID!, $quantity: Int!, $ticketType: TicketTypeInput!) {
   node(id: $eventId) {
     ... on TicketedEvent {
       createNewTicketType(quantity: $quantity, ticketType: $ticketType) {
@@ -15,47 +17,20 @@ query ($eventId: ID!, $quantity: Int!, $ticketType: TicketTypeInput!) {
       }
     }
   }
-}
-```
-
-```json
-{
-  "eventId": "Q0VOTlpuZXRfTmlrYXU6VGlja2V0ZWRFdmVudDo3Ng==",
-  "quantity": 2,
-  "ticketType": {
-    "name": "General Admission",
-    "fineprint": "Must be over 18 and vacinate to redeem ticket.",
-    "description": "Access to the finest event.",
-    "dateTime": "2021-11-30T02:29:39Z",
-    "venue": "The moon"
-  }
-}
-```
-
-### Response
-
-<textarea>
-  {`{
-  "data": {
-    "node": {
-      "createNewTicketType": {
-        "id": "Q0VOTlpuZXRfTmlrYXU6VHJhbnNhY3Rpb246VGlja2V0VHlwZTosi4J4JIAzGa290SloNzTRohXJ6NsnRRdWtjlmJyYAU5NkzcImEiqGqx_bbIxGMOETP2Zlyw5RSH2I0HvG2V2EgAAAAAATZM3CJhIqhqsf22yMRjDhEz9mZcsOUUh9iNB7xtldhIeA0wAAAACAAAAAAQIREdlbmVyYWwgQWRtaXNzaW9uAdRpcGZzOi8vUW1aWk5wYkxIN0R3S1VWQmZ0UEtEVUQ2NU1tQXBWejFNZ1B6UlZvV29YZVA1OQBVASBjZW5uem5ldDRjZW5uem5ldC1ub2RlAQAAAC0AAAAtAAAARN9qy2iZB2CbAwAAADfjl_x8kfXkAQAAAED-OtQB-JWaBAAAANK8mJfu0I8VAgAAAPeLJ4vlP0VMAgAAAGh61ErTfwPCAQAAAMvKJeOfFCOHAgAAAKs8BXIpH-uLAQAAAO2ZxayyXu31AgAAAON3zpEWvLXxAQAAALydiZBPW5I_AQAAAM7H-5YxR_CFAQAAAHnG2ibx1xgwAQAAADfIuxNQqaKoAQAAADfoNPQzmLotAQAAAP9APz5JQ4NoAQAAABjvWKO2e6dwAQAAAAUAAAAAAAAE",
-        "signerPayload": "0x1e034c000000020000000004084447656e6572616c2041646d697373696f6e01d4697066733a2f2f516d5a5a4e70624c483744774b5556426674504b44554436354d6d4170567a314d67507a52566f576f58655035390000550100002d000000050000004d9337089848aa1aac7f6db23118c3844cfd99972c394521f62341ef1b6576124d9337089848aa1aac7f6db23118c3844cfd99972c394521f62341ef1b657612",
-        "expectedSigningAddress": {
-          "address": "5G6L4FqzKtpe9T48eUK5fTrfM9znsmPGKNrxcynaw2hCfRoL"
-        }
-      }
-    }
-  }
 }`}
-</textarea>
-
-We then need to sign the signerPayload with the correct private key, and submit the signature along with the transcation ID.
-
-### Query
-
-```graphql
-mutation ($transactionId: ID!, $signature: String) {
+  path="data.node.createNewTicketType"
+  variables={{
+    eventId: "Q0VOTlpuZXRfTmlrYXU6VGlja2V0ZWRFdmVudDo3Ng==",
+    quantity: 2,
+    ticketType: {
+      name: "General Admission",
+      fineprint: "Must be over 18 and vacinate to redeem ticket.",
+      description: "Access to the finest event.",
+      dateTime: "2021-11-30T02:29:39Z",
+      venue: "The moon",
+    },
+  }}
+  mutation={`mutation($transactionId: ID!, $signature: String) {
   submitTransaction(transactionId: $transactionId, signature: $signature) {
     status
     result {
@@ -77,50 +52,7 @@ mutation ($transactionId: ID!, $signature: String) {
     }
   }
 }
-```
-
-### Variables
-
-<textarea>
-  {`{
-    "transactionId": "Q0VOTlpuZXRfTmlrYXU6VHJhbnNhY3Rpb246VGlja2V0VHlwZTosi4J4JIAzGa290SloNzTRohXJ6NsnRRdWtjlmJyYAU5NkzcImEiqGqx_bbIxGMOETP2Zlyw5RSH2I0HvG2V2EgAAAAAATZM3CJhIqhqsf22yMRjDhEz9mZcsOUUh9iNB7xtldhIeA0wAAAACAAAAAAQIREdlbmVyYWwgQWRtaXNzaW9uAdRpcGZzOi8vUW1aWk5wYkxIN0R3S1VWQmZ0UEtEVUQ2NU1tQXBWejFNZ1B6UlZvV29YZVA1OQBVASBjZW5uem5ldDRjZW5uem5ldC1ub2RlAQAAAC0AAAAtAAAARN9qy2iZB2CbAwAAADfjl_x8kfXkAQAAAED-OtQB-JWaBAAAANK8mJfu0I8VAgAAAPeLJ4vlP0VMAgAAAGh61ErTfwPCAQAAAMvKJeOfFCOHAgAAAKs8BXIpH-uLAQAAAO2ZxayyXu31AgAAAON3zpEWvLXxAQAAALydiZBPW5I_AQAAAM7H-5YxR_CFAQAAAHnG2ibx1xgwAQAAADfIuxNQqaKoAQAAADfoNPQzmLotAQAAAP9APz5JQ4NoAQAAABjvWKO2e6dwAQAAAAUAAAAAAAAE",
-    "signature": "0x0154e9853f21d0ae0b242261bceba425f8779965a7e4766221d737b82268da911fb8ebda5ce2a4dd0f41bcc81ef3020d118b4d194cff7968ea790178517af9d28e"
-  }`}
-</textarea>
-
-### Response
-
-```json
-{
-  "data": {
-    "submitTransaction": {
-      "status": "Success",
-      "result": {
-        "id": "Q0VOTlpuZXRfTmlrYXU6VGlja2V0VHlwZTo3Ni8x",
-        "name": "General Admission",
-        "ticketedEvent": {
-          "name": "My Awesome Event"
-        },
-        "tickets": {
-          "edges": [
-            {
-              "node": {
-                "name": "General Admission",
-                "id": "Q0VOTlpuZXRfTmlrYXU6VGlja2V0Ojc2LzEvMA=="
-              }
-            },
-            {
-              "node": {
-                "name": "General Admission",
-                "id": "Q0VOTlpuZXRfTmlrYXU6VGlja2V0Ojc2LzEvMQ=="
-              }
-            }
-          ]
-        }
-      }
-    }
-  }
-}
-```
+`}
+/>
 
 [Next: Transfer a Ticket](./transferTicket)

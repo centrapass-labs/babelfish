@@ -1,9 +1,9 @@
-After you have created the tickets you can transfer an indiviual Ticket by query on it.
+After you have created the tickets you can transfer an indiviual Ticket by query on it. You will have to replace the TicketID with a ticket you have created in a previous step.
 
-## Query
+import QueryExample from "../../components/QueryExample";
 
-```graphql
-query ($ticketId: ID!, $toAddress: String!) {
+<QueryExample
+  query={`query ($ticketId: ID!, $toAddress: String!) {
   node(id: $ticketId) {
     ... on Ticket {
       createTransferTransaction(toAddress: $toAddress) {
@@ -15,41 +15,13 @@ query ($ticketId: ID!, $toAddress: String!) {
       }
     }
   }
-}
-```
-
-## Variables
-
-```json
-{
-  "toAddress": "5CAy8Szy5BpVyFGadMcuEejVwPwjAHao7qsQxFkiHjCejWQ7",
-  "ticketId": "Q0VOTlpuZXRfTmlrYXU6VGlja2V0Ojc2LzEvMA=="
-}
-```
-
-## Response
-
-<textarea>
-  {`{
-  "data": {
-    "node": {
-      "createTransferTransaction": {
-        "id": "Q0VOTlpuZXRfTmlrYXU6VHJhbnNhY3Rpb246dW5kZWZpbmVkOgsi4J4JIAzGa290SloNzTRohXJ6NsnRRdWtjlmJyYAU5NkzcImEiqGqx_bbIxGMOETP2Zlyw5RSH2I0HvG2V2EgAAAAAATZM3CJhIqhqsf22yMRjDhEz9mZcsOUUh9iNB7xtldhIeBUwAAAABAAAAAAAAAATG4f_8ZOqwR4OiLXOERe_5jDWd36OD7Ebs7zEMXGJbXQEgY2VubnpuZXQ0Y2VubnpuZXQtbm9kZQEAAAAtAAAALQAAAETfastomQdgmwMAAAA345f8fJH15AEAAABA_jrUAfiVmgQAAADSvJiX7tCPFQIAAAD3iyeL5T9FTAIAAABoetRK038DwgEAAADLyiXjnxQjhwIAAACrPAVyKR_riwEAAADtmcWssl7t9QIAAADjd86RFry18QEAAAC8nYmQT1uSPwEAAADOx_uWMUfwhQEAAAB5xtom8dcYMAEAAAA3yLsTUKmiqAEAAAA36DT0M5i6LQEAAAD_QD8-SUODaAEAAAAY71ijtnuncAEAAAAFAAAAAAAABA",
-        "signerPayload": "0x1e054c000000010000000000000004c6e1fffc64eab04783a22d738445eff98c359ddfa383ec46ecef310c5c625b005d0100002d000000050000004d9337089848aa1aac7f6db23118c3844cfd99972c394521f62341ef1b6576124d9337089848aa1aac7f6db23118c3844cfd99972c394521f62341ef1b657612",
-        "expectedSigningAddress": {
-          "address": "5G6L4FqzKtpe9T48eUK5fTrfM9znsmPGKNrxcynaw2hCfRoL"
-        }
-      }
-    }
-  }
 }`}
-
-</textarea>
-
-We then need to sign the signerPayload with the correct private key, and submit the signature along with the transcation ID.
-
-```graphql
-mutation ($transactionId: ID!, $signature: String) {
+  path="data.node.createTransferTransaction"
+  variables={{
+    toAddress: "5CAy8Szy5BpVyFGadMcuEejVwPwjAHao7qsQxFkiHjCejWQ7",
+    ticketId: "Q0VOTlpuZXRfTmlrYXU6VGlja2V0Ojc2LzEvMA==",
+  }}
+  mutation={`mutation ($transactionId: ID!, $signature: String) {
   submitTransaction(transactionId: $transactionId, signature: $signature) {
     status
     result {
@@ -62,36 +34,8 @@ mutation ($transactionId: ID!, $signature: String) {
       }
     }
   }
-}
-```
-
-Variables
-
-<textarea>
-  {`{
-  "transactionId": "Q0VOTlpuZXRfTmlrYXU6VHJhbnNhY3Rpb246VHJhbnNmZXI6si4J4JIAzGa290SloNzTRohXJ6NsnRRdWtjlmJyYAU5NkzcImEiqGqx_bbIxGMOETP2Zlyw5RSH2I0HvG2V2EgAAAAAATZM3CJhIqhqsf22yMRjDhEz9mZcsOUUh9iNB7xtldhIeBUwAAAABAAAAAAAAAATG4f_8ZOqwR4OiLXOERe_5jDWd36OD7Ebs7zEMXGJbXQEgY2VubnpuZXQ0Y2VubnpuZXQtbm9kZQEAAAAtAAAALQAAAETfastomQdgmwMAAAA345f8fJH15AEAAABA_jrUAfiVmgQAAADSvJiX7tCPFQIAAAD3iyeL5T9FTAIAAABoetRK038DwgEAAADLyiXjnxQjhwIAAACrPAVyKR_riwEAAADtmcWssl7t9QIAAADjd86RFry18QEAAAC8nYmQT1uSPwEAAADOx_uWMUfwhQEAAAB5xtom8dcYMAEAAAA3yLsTUKmiqAEAAAA36DT0M5i6LQEAAAD_QD8-SUODaAEAAAAY71ijtnuncAEAAAAFAAAAAAAABA",
-  "signature": "0x0102bfe7fe45b9bdb5c2aa79c0e7023232c41a707cd6e180d375af2a1550bc461e075fd398f8cb2e9f5b2f7034596b5da6f950088690c0f5b9b6a30efff256e88a"
 }`}
-</textarea>
-
-Result
-
-```json
-{
-  "data": {
-    "submitTransaction": {
-      "status": "Success",
-      "result": {
-        "id": "Q0VOTlpuZXRfTmlrYXU6VGlja2V0Ojc2LzEvMA==",
-        "name": "General Admission",
-        "owner": {
-          "address": "5CAy8Szy5BpVyFGadMcuEejVwPwjAHao7qsQxFkiHjCejWQ7"
-        }
-      }
-    }
-  }
-}
-```
+/>
 
 We can see now this ticket has a new owner :)
 

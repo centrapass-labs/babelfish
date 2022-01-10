@@ -1,4 +1,4 @@
-export default (props: any) => (
+const Input = (props: any) => (
   <input
     {...props}
     style={{
@@ -9,3 +9,5 @@ export default (props: any) => (
     }}
   />
 );
+
+export default Input;

@@ -44,7 +44,7 @@ var get = function (obj: any, pathString: string) {
   return current;
 };
 
-export default ({
+const QueryExample = ({
   query,
   exampleOutput,
   variables,
@@ -276,3 +276,5 @@ export default ({
     </div>
   );
 };
+
+export default QueryExample;

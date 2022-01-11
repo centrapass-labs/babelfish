@@ -1,4 +1,4 @@
-export default (props: any) => (
+const Button = (props: any) => (
   <button
     {...props}
     style={{
@@ -15,3 +15,5 @@ export default (props: any) => (
     }}
   />
 );
+
+export default Button;

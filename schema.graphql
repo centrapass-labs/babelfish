@@ -6,10 +6,18 @@
 type Address implements Node {
   address: ID
 
+  """Query information about a particular address."""
+  balance(assetId: Int!): Balance
+
   """
   Creates a Transaction for signing that will create a new collection that has NFTs
   """
   createGenericNFTCollection(name: String!): Transaction
+
+  """
+  Creates a Transaction for signing that will create a new Generic Asset.
+  """
+  createNewGenericAsset(metadata: GenericAssetsMetadataInput!, options: GenericAssetsOptionInput!): Transaction
 
   """
   Creates a Transaction for signing that will create a new Event that can have tickets.
@@ -77,6 +85,17 @@ type Address implements Node {
   ): TicketConnection
 }
 
+type Balance implements Node {
+  amount: Int
+  asset: GenericAsset
+
+  """Creates a Transaction for transferring a Ticket to another address"""
+  createTransferTransaction(amount: Int!, toAddress: String!): Transaction
+
+  """Unique identifier for the resource"""
+  id: ID
+}
+
 """
 A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
@@ -86,6 +105,55 @@ scalar Date
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
 scalar DateTime
+
+type GenericAsset implements Node {
+  assetId: Int
+
+  """Query information about a particular address."""
+  balance(address: String!): Balance
+
+  """Creates a Transaction for minting more of the token"""
+  createBurnTransaction(amount: Int!, targetAddress: String!): Transaction
+
+  """Creates a Transaction for minting more of the token"""
+  createMintTransaction(amount: Int!, toAddress: String!): Transaction
+  decimalPlaces: Int
+
+  """Unique identifier for the resource"""
+  id: ID
+  symbol: String
+}
+
+"""The metadata of your generic asset."""
+input GenericAssetsMetadataInput {
+  """
+  Balance on chain is stored as a int, and so should all your maths on it. This is why decimal place is only ever used in the display of the token.
+  """
+  decimalPlaces: Int!
+
+  """Minimum amount to keep a balance."""
+  existentialDeposit: Int
+
+  """The symbol of the assest. I.E. TEST or CENNZ or CPAY"""
+  symbol: String!
+}
+
+"""The options of your generic asset."""
+input GenericAssetsOptionInput {
+  """The address allowed to burn this token: None, Self, or the address."""
+  allowBurn: String!
+
+  """The address allowed to mint this token: None, Self, or the address."""
+  allowMint: String!
+
+  """The address allowed to update this token: None, Self, or the address."""
+  allowUpdate: String!
+
+  """
+  The amount to be initially issued this is in integer value, that is without the decimal place.
+  """
+  initialIssuance: Int!
+}
 
 """A Generic NFT"""
 type GenericNFT implements NFT & Node {

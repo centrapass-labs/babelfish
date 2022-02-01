@@ -1,4 +1,11 @@
-import { arg, objectType, inputObjectType, nonNull, stringArg } from "nexus";
+import {
+  arg,
+  objectType,
+  inputObjectType,
+  nonNull,
+  stringArg,
+  intArg,
+} from "nexus";
 import { GlobalId } from "../entities/entityHelpers";
 import "../nexus-typegen";
 
@@ -12,12 +19,82 @@ export const TicketedEventDetailsInput = inputObjectType({
   },
 });
 
+export const GenericAssetsOptionInput = inputObjectType({
+  name: "GenericAssetsOptionInput",
+  description: "The options of your generic asset.",
+  definition(t) {
+    t.nonNull.int("initialIssuance", {
+      description:
+        "The amount to be initially issued this is in integer value, that is without the decimal place.",
+    });
+    t.nonNull.string("allowBurn", {
+      description:
+        "The address allowed to burn this token: None, Self, or the address.",
+    });
+    t.nonNull.string("allowMint", {
+      description:
+        "The address allowed to mint this token: None, Self, or the address.",
+    });
+    t.nonNull.string("allowUpdate", {
+      description:
+        "The address allowed to update this token: None, Self, or the address.",
+    });
+  },
+});
+
+export const GenericAssetsMetadataInput = inputObjectType({
+  name: "GenericAssetsMetadataInput",
+  description: "The metadata of your generic asset.",
+  definition(t) {
+    t.nonNull.string("symbol", {
+      description: "The symbol of the assest. I.E. TEST or CENNZ or CPAY",
+    });
+
+    t.nonNull.int("decimalPlaces", {
+      description:
+        "Balance on chain is stored as a int, and so should all your maths on it. This is why decimal place is only ever used in the display of the token.",
+    });
+    t.int("existentialDeposit", {
+      description: "Minimum amount to keep a balance.",
+    });
+  },
+});
+
 export const Address = objectType({
   name: "Address",
   description: "An address on this ledger.",
   definition(t) {
     t.implements("Node");
     t.id("address");
+    t.field("balance", {
+      description: "Query information about a particular address.",
+      args: {
+        assetId: nonNull(intArg()),
+      },
+      type: "Balance",
+      resolve(source, args, context) {
+        return context.instance.load
+          .Address(source.id as GlobalId<any, "Address">)
+          .balance(args);
+      },
+    });
+    t.field("createNewGenericAsset", {
+      description:
+        "Creates a Transaction for signing that will create a new Generic Asset.",
+      type: "Transaction",
+      args: {
+        options: nonNull(arg({ type: GenericAssetsOptionInput })),
+        metadata: nonNull(arg({ type: GenericAssetsMetadataInput })),
+      },
+      resolve(source, args, context) {
+        return context.instance.load
+          .Address(source.id as GlobalId<any, "Address">)
+          .createNewGenericAsset({
+            options: args.options,
+            metadata: args.metadata,
+          });
+      },
+    });
     t.connectionField("nfts", {
       type: "NFT",
       description: "List all the Tickets held by this address.",

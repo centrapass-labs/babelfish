@@ -80,7 +80,7 @@ const GenericAssetEntity = defineEntity(NetworkComponent, {
       const burnAddress = permission.V1.burn.Address;
       return this.createTransaction({
         address: burnAddress,
-        extrinsic: api.tx.genericAsset.mint(
+        extrinsic: api.tx.genericAsset.burn(
           this.__localId,
           args.targetAddress,
           args.amount

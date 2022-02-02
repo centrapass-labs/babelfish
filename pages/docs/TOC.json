@@ -19,6 +19,14 @@
     {
       "name": "Transfer Ticket",
       "slug": "transferTicket"
+    },
+    {
+      "name": "Create Generic Asset",
+      "slug": "createGenericAsset"
+    },
+    {
+      "name": "View and Transfer Generic Asset",
+      "slug": "transferGenericAsset"
     }
   ]
 }

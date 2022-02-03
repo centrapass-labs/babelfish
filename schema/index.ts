@@ -19,6 +19,7 @@ import * as TicketStub from "./TicketStub";
 import * as TicketedEvent from "./TicketedEvent";
 import * as Ticket from "./Ticket";
 import * as Address from "./Address";
+import * as GenericAsset from "./GenericAsset";
 
 import { GraphQLDate, GraphQLDateTime } from "graphql-iso-date";
 import {
@@ -250,6 +251,27 @@ const Mutation = extendType({
                 status: "Success",
                 result: null,
               });
+            } else if (__localId === "Balance") {
+              resolve({
+                status: "Success",
+                result: null,
+              });
+            } else if (__localId === "GenericAsset") {
+              const [{ value: assetId }] = JSON.parse(
+                fnd.data.event.find(
+                  ({ event_id }: any) => event_id === "Created"
+                ).params
+              );
+              resolve({
+                status: "Success",
+                result: instance.loadEntity(
+                  createGlobalId({
+                    __network,
+                    __type: __localId,
+                    __localId: assetId,
+                  })
+                ),
+              });
             } else {
               resolve({
                 status: `${JSON.stringify(fnd.data.event)}`,
@@ -440,6 +462,7 @@ export default makeSchema({
     Address,
     GenericNFTCollection,
     GenericNFT,
+    GenericAsset,
   ],
   plugins: [
     connectionPlugin({

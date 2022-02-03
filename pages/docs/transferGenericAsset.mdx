@@ -1,0 +1,33 @@
+# Transfer and View Generic Asset balance
+
+import QueryExample from "../../components/QueryExample";
+
+<QueryExample
+  query={`{
+  network(network: CENNZnet_Nikau) {
+    address(address: "5G6L4FqzKtpe9T48eUK5fTrfM9znsmPGKNrxcynaw2hCfRoL") {
+      address
+      balance(assetId: 17009) {
+        amount
+        asset {
+          symbol
+        }
+        createTransferTransaction(
+          toAddress: "5CniLEDp3csvYuYCkKjsPiZ9cf4e5MVEckkf1SB4sB4QG8YJ"
+          amount: 10
+        ) {
+          id
+          signerPayload
+        }
+      }
+    }
+}
+}`}
+  path="data.network.address.balance.createTransferTransaction"
+  variables={{}}
+  mutation={`mutation($transactionId: ID!, $signature: String) {
+submitTransaction(transactionId: $transactionId, signature: $signature) {
+status
+}
+}`}
+/>

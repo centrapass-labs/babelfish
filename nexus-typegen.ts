@@ -48,6 +48,17 @@ declare global {
 }
 
 export interface NexusGenInputs {
+  GenericAssetsMetadataInput: { // input type
+    decimalPlaces: number; // Int!
+    existentialDeposit?: number | null; // Int
+    symbol: string; // String!
+  }
+  GenericAssetsOptionInput: { // input type
+    allowBurn: string; // String!
+    allowMint: string; // String!
+    allowUpdate: string; // String!
+    initialIssuance: number; // Int!
+  }
   TicketTypeInput: { // input type
     dateTime?: NexusGenScalars['DateTime'] | null; // DateTime
     description?: string | null; // String
@@ -80,6 +91,17 @@ export interface NexusGenObjects {
   Address: { // root type
     address?: string | null; // ID
     id?: string | null; // ID
+  }
+  Balance: { // root type
+    amount?: number | null; // Int
+    asset?: NexusGenRootTypes['GenericAsset'] | null; // GenericAsset
+    id?: string | null; // ID
+  }
+  GenericAsset: { // root type
+    assetId?: number | null; // Int
+    decimalPlaces?: number | null; // Int
+    id?: string | null; // ID
+    symbol?: string | null; // String
   }
   GenericNFT: { // root type
     description?: string | null; // String
@@ -171,7 +193,7 @@ export interface NexusGenObjects {
 
 export interface NexusGenInterfaces {
   NFT: NexusGenRootTypes['GenericNFT'] | NexusGenRootTypes['Ticket'];
-  Node: NexusGenRootTypes['Address'] | NexusGenRootTypes['GenericNFT'] | NexusGenRootTypes['GenericNFTCollection'] | NexusGenRootTypes['Network'] | NexusGenRootTypes['Ticket'] | NexusGenRootTypes['TicketType'] | NexusGenRootTypes['TicketedEvent'] | NexusGenRootTypes['Transaction'];
+  Node: NexusGenRootTypes['Address'] | NexusGenRootTypes['Balance'] | NexusGenRootTypes['GenericAsset'] | NexusGenRootTypes['GenericNFT'] | NexusGenRootTypes['GenericNFTCollection'] | NexusGenRootTypes['Network'] | NexusGenRootTypes['Ticket'] | NexusGenRootTypes['TicketType'] | NexusGenRootTypes['TicketedEvent'] | NexusGenRootTypes['Transaction'];
 }
 
 export interface NexusGenUnions {
@@ -184,12 +206,29 @@ export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars & NexusGenEnu
 export interface NexusGenFieldTypes {
   Address: { // field return type
     address: string | null; // ID
+    balance: NexusGenRootTypes['Balance'] | null; // Balance
     createGenericNFTCollection: NexusGenRootTypes['Transaction'] | null; // Transaction
+    createNewGenericAsset: NexusGenRootTypes['Transaction'] | null; // Transaction
     createTicketedEvent: NexusGenRootTypes['Transaction'] | null; // Transaction
     id: string | null; // ID
     nfts: NexusGenRootTypes['NFTConnection'] | null; // NFTConnection
     ticketStubs: NexusGenRootTypes['TicketStubConnection'] | null; // TicketStubConnection
     tickets: NexusGenRootTypes['TicketConnection'] | null; // TicketConnection
+  }
+  Balance: { // field return type
+    amount: number | null; // Int
+    asset: NexusGenRootTypes['GenericAsset'] | null; // GenericAsset
+    createTransferTransaction: NexusGenRootTypes['Transaction'] | null; // Transaction
+    id: string | null; // ID
+  }
+  GenericAsset: { // field return type
+    assetId: number | null; // Int
+    balance: NexusGenRootTypes['Balance'] | null; // Balance
+    createBurnTransaction: NexusGenRootTypes['Transaction'] | null; // Transaction
+    createMintTransaction: NexusGenRootTypes['Transaction'] | null; // Transaction
+    decimalPlaces: number | null; // Int
+    id: string | null; // ID
+    symbol: string | null; // String
   }
   GenericNFT: { // field return type
     createTransferTransaction: NexusGenRootTypes['Transaction'] | null; // Transaction
@@ -313,12 +352,29 @@ export interface NexusGenFieldTypes {
 export interface NexusGenFieldTypeNames {
   Address: { // field return type name
     address: 'ID'
+    balance: 'Balance'
     createGenericNFTCollection: 'Transaction'
+    createNewGenericAsset: 'Transaction'
     createTicketedEvent: 'Transaction'
     id: 'ID'
     nfts: 'NFTConnection'
     ticketStubs: 'TicketStubConnection'
     tickets: 'TicketConnection'
+  }
+  Balance: { // field return type name
+    amount: 'Int'
+    asset: 'GenericAsset'
+    createTransferTransaction: 'Transaction'
+    id: 'ID'
+  }
+  GenericAsset: { // field return type name
+    assetId: 'Int'
+    balance: 'Balance'
+    createBurnTransaction: 'Transaction'
+    createMintTransaction: 'Transaction'
+    decimalPlaces: 'Int'
+    id: 'ID'
+    symbol: 'String'
   }
   GenericNFT: { // field return type name
     createTransferTransaction: 'Transaction'
@@ -441,8 +497,15 @@ export interface NexusGenFieldTypeNames {
 
 export interface NexusGenArgTypes {
   Address: {
+    balance: { // args
+      assetId: number; // Int!
+    }
     createGenericNFTCollection: { // args
       name: string; // String!
+    }
+    createNewGenericAsset: { // args
+      metadata: NexusGenInputs['GenericAssetsMetadataInput']; // GenericAssetsMetadataInput!
+      options: NexusGenInputs['GenericAssetsOptionInput']; // GenericAssetsOptionInput!
     }
     createTicketedEvent: { // args
       eventDetails: NexusGenInputs['TicketedEventDetailsInput']; // TicketedEventDetailsInput!
@@ -468,6 +531,25 @@ export interface NexusGenArgTypes {
       first?: number | null; // Int
       last?: number | null; // Int
       ticketTypeId?: string | null; // String
+    }
+  }
+  Balance: {
+    createTransferTransaction: { // args
+      amount: number; // Int!
+      toAddress: string; // String!
+    }
+  }
+  GenericAsset: {
+    balance: { // args
+      address: string; // String!
+    }
+    createBurnTransaction: { // args
+      amount: number; // Int!
+      targetAddress: string; // String!
+    }
+    createMintTransaction: { // args
+      amount: number; // Int!
+      toAddress: string; // String!
     }
   }
   GenericNFT: {
@@ -540,11 +622,13 @@ export interface NexusGenArgTypes {
 
 export interface NexusGenAbstractTypeMembers {
   NFT: "GenericNFT" | "Ticket"
-  Node: "Address" | "GenericNFT" | "GenericNFTCollection" | "Network" | "Ticket" | "TicketType" | "TicketedEvent" | "Transaction"
+  Node: "Address" | "Balance" | "GenericAsset" | "GenericNFT" | "GenericNFTCollection" | "Network" | "Ticket" | "TicketType" | "TicketedEvent" | "Transaction"
 }
 
 export interface NexusGenTypeInterfaces {
   Address: "Node"
+  Balance: "Node"
+  GenericAsset: "Node"
   GenericNFT: "NFT" | "Node"
   GenericNFTCollection: "Node"
   Network: "Node"

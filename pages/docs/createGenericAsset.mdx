@@ -1,0 +1,39 @@
+# Create Generic Asset
+
+import QueryExample from "../../components/QueryExample";
+
+<QueryExample
+  query={`{
+      network(network: CENNZnet_Nikau) {
+    address(address: "5G6L4FqzKtpe9T48eUK5fTrfM9znsmPGKNrxcynaw2hCfRoL") {
+     	createNewGenericAsset(options: {
+        initialIssuance: 10000,
+        allowBurn: "Self",
+        allowMint: "Self",
+        allowUpdate: "Self"
+      }, metadata:{
+        symbol: "BEAR",
+        decimalPlaces: 0,
+      }) {
+        id
+        signerPayload
+      }
+     
+    } 
+    }
+}`}
+  path="data.network.address.createNewGenericAsset"
+  variables={{}}
+  mutation={`mutation($transactionId: ID!, $signature: String) {
+  submitTransaction(transactionId: $transactionId, signature: $signature) {
+    status
+    result {
+      ... on GenericAsset {
+        id
+        assetId
+        symbol
+      }
+    }
+  }
+}`}
+/>

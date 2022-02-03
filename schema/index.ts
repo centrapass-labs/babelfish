@@ -293,7 +293,22 @@ const Mutation = extendType({
               .catch((err: any) => reject(err));
           }),
           new Promise((cb) =>
-            setTimeout(() => cb({ status: "pending", result: null }), 15000)
+            setTimeout(async () => {
+              const found = await getTransaction(
+                __network,
+                extrinsic.hash.toHex(),
+                false
+              );
+
+              if (found) {
+                return cb(handle(found));
+              }
+
+              cb({
+                status: "pending #" + extrinsic.hash.toHex(),
+                result: null,
+              });
+            }, 15000)
           ),
         ]) as any;
       },

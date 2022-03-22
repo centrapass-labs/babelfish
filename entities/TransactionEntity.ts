@@ -56,11 +56,8 @@ const TransactionEntity = defineEntity(NetworkComponent, {
       const params = JSON.parse(intrinsicWithNonce.params);
 
       for (var i = 0; i < params.length; i++) {
-        if (
-          JSON.stringify(params[i].value) !=
-          JSON.stringify(signerPayload.method.args[i])
-        ) {
-          throw "Doesnt match with Nonce";
+        if (params[i].value != signerPayload.method.args[i]) {
+          throw "Nonce Used";
         }
       }
       return intrinsicWithNonce;

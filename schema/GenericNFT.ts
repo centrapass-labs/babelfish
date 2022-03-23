@@ -45,9 +45,10 @@ export const GenericNFTCollection = objectType({
           .GenericNFTCollection(
             source.id as GlobalId<any, "GenericNFTCollection">
           )
-          .mintUnique({
+          .mintSeries({
             metadata: args.metadata,
             attributes: args.attributes,
+            quantity: 1,
           });
       },
     });

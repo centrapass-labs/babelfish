@@ -11,32 +11,6 @@ const GenericNFTCollection = defineEntity(
   {
     __type: "GenericNFTCollection",
     capability: {
-      async mintUnique({
-        metadata,
-        attributes,
-      }: {
-        metadata: any;
-        attributes: ({ Text: string } | { Url: string })[];
-      }) {
-        const api = await this.apiConnector();
-
-        const pinned = await pinata.pinJSONToIPFS(metadata);
-        const unsigned = api.tx.nft.mintUnique(
-          this.__localId,
-          null,
-          attributes,
-          new Text(api.registry, `ipfs://${pinned.IpfsHash}`).toHex(),
-          null
-        );
-
-        const owner = await api.query.nft.collectionOwner(this.__localId);
-        return this.createTransaction({
-          address: owner.toString(),
-          extrinsic: unsigned,
-          outputType: "GenericNFT",
-        });
-      },
-
       async nfts(args: {
         after?: string | null | undefined;
         before?: string | null | undefined;

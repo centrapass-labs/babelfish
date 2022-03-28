@@ -27,36 +27,60 @@ const TransactionEntity = defineEntity(NetworkComponent, {
         this.__network == "CENNZnet_Nikau"
           ? "https://service.eks.centrality.me/"
           : "https://service.eks.centralityapp.com/";
-      const uncoverResponse = await fetch(
-        UnCoverEndpoint + "cennznet-explorer-api/api/scan/extrinsics",
-        {
-          headers: {
-            accept: "application/json, text/plain, */*",
-            "content-type": "application/json;charset=UTF-8",
-          },
-          body: JSON.stringify({
-            row: 10,
-            page: 0,
-            address: signerPayload.address,
-            signed: "all",
-          }),
-          method: "POST",
-        }
-      );
-      const res = await uncoverResponse.json();
 
-      const intrinsicWithNonce = res.data.extrinsics.find(
-        ({ nonce }: any) => nonce == signerPayload.nonce
-      );
+      let intrinsicWithNonce;
+      for (let i = 0; !intrinsicWithNonce; i++) {
+        const uncoverResponse = await fetch(
+          UnCoverEndpoint + "cennznet-explorer-api/api/scan/extrinsics",
+          {
+            headers: {
+              accept: "application/json, text/plain, */*",
+              "content-type": "application/json;charset=UTF-8",
+            },
+            body: JSON.stringify({
+              row: 10,
+              page: i,
+              address: signerPayload.address,
+              signed: "all",
+            }),
+            method: "POST",
+          }
+        );
+        const res: {
+          data: {
+            extrinsics: {
+              nonce: number;
+              params: string;
+            }[];
+          };
+        } = await uncoverResponse.json();
+        console.log(res);
+
+        intrinsicWithNonce = res.data.extrinsics.find(
+          ({ nonce }: any) => nonce == signerPayload.nonce
+        );
+        if (
+          (signerPayload.nonce as unknown as number) >
+          res.data.extrinsics[0].nonce
+        ) {
+          throw "Unsubmitted";
+        }
+        if (
+          (signerPayload.nonce as unknown as number) <
+          (res.data.extrinsics.at(-1)?.nonce ?? 0)
+        ) {
+          break;
+        }
+      }
 
       if (!intrinsicWithNonce) {
-        throw "Unsubmitted";
+        throw "Nonce Used";
       }
 
       const params = JSON.parse(intrinsicWithNonce.params);
 
       for (var i = 0; i < params.length; i++) {
-        if (params[i].value != signerPayload.method.args[i]) {
+        if (params[i].value != signerPayload.method.args[i].toJSON()) {
           throw "Nonce Used";
         }
       }

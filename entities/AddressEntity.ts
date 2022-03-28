@@ -95,7 +95,7 @@ const AddresssEntity = defineEntity(NetworkComponent, {
     },
     async createTicketedEvent({ name }: { name: string }) {
       const api = await this.apiConnector();
-      const unsigned = api.tx.nft.createCollection(name, null, null);
+      const unsigned = api.tx.nft.createCollection(name, null);
       return this.createTransaction({
         address: this.__localId,
         extrinsic: unsigned,
@@ -104,7 +104,7 @@ const AddresssEntity = defineEntity(NetworkComponent, {
     },
     async createGenericNFTCollection({ name }: { name: string }) {
       const api = await this.apiConnector();
-      const unsigned = api.tx.nft.createCollection(name, null, null);
+      const unsigned = api.tx.nft.createCollection(name, null);
       return this.createTransaction({
         address: this.__localId,
         extrinsic: unsigned,

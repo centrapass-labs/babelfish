@@ -5,6 +5,7 @@ import {
   nonNull,
   stringArg,
   intArg,
+  idArg,
 } from "nexus";
 import { GlobalId } from "../entities/entityHelpers";
 import "../nexus-typegen";
@@ -15,6 +16,21 @@ export const TicketedEventDetailsInput = inputObjectType({
   definition(t) {
     t.nonNull.string("name", {
       description: "The name of the event. IE My Festival",
+    });
+  },
+});
+
+export const BatchedTransactionOptionInput = inputObjectType({
+  name: "BatchedTransactionOptionInput",
+  description:
+    "The options of your batched transaction. This will return Ok in all circumstances, unless you turn on batchAll.",
+  definition(t) {
+    t.nonNull.list.string("ids", {
+      description: "The IDs of the transactions you want to batch",
+    });
+    t.boolean("batchAll", {
+      description:
+        "The whole transaction will rollback and fail if any of the calls failed.",
     });
   },
 });
@@ -173,6 +189,19 @@ export const Address = objectType({
         return context.instance.load
           .Address(source.id as GlobalId<any, "Address">)
           .createTicketedEvent({ name: args.eventDetails.name });
+      },
+    });
+    t.field("createBatchedTransaction", {
+      description:
+        "Creates a Transaction for signing that will create a new Event that can have tickets.",
+      type: "Transaction",
+      args: {
+        transactionDetails: nonNull(BatchedTransactionOptionInput),
+      },
+      resolve(source, args, context) {
+        return context.instance.load
+          .Address(source.id as GlobalId<any, "Address">)
+          .createBatchedTransaction(args.transactionDetails);
       },
     });
     t.field("createGenericNFTCollection", {

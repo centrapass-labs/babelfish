@@ -1,8 +1,14 @@
 import { Text } from "@polkadot/types";
-import { createGlobalId, defineEntity } from "./entityHelpers";
+import {
+  createGlobalId,
+  defineEntity,
+  getGlobalIdInfo,
+  GlobalId,
+} from "./entityHelpers";
 import NetworkComponent from "./NetworkComponent";
 import fetch from "node-fetch";
 import { getNFTs } from "./getNFTsHelper";
+import { SubmittableExtrinsic } from "@cennznet/api/types";
 
 const ipfsCache: { [key: string]: Promise<any> } = {};
 
@@ -109,6 +115,57 @@ const AddresssEntity = defineEntity(NetworkComponent, {
         address: this.__localId,
         extrinsic: unsigned,
         outputType: "GenericNFTCollection",
+      });
+    },
+    async createBatchedTransaction({
+      ids,
+      batchAll,
+    }: {
+      ids: string[];
+      batchAll: boolean;
+    }) {
+      const api = await this.apiConnector();
+
+      const calls = ids.map((id) => {
+        const { __network, __type, __localId } = getGlobalIdInfo(
+          id as GlobalId<any, any>
+        );
+
+        if (__type !== "Transaction") {
+          throw new Error("Transaction ID isn't a Transaction ID");
+        }
+
+        const signerPayload = api.registry.createType(
+          "SignerPayload",
+          Buffer.from(
+            id.replace(
+              Buffer.from(`${__network}:Transaction:${__localId}:`).toString(
+                "base64url"
+              ),
+
+              ""
+            ),
+            "base64url"
+          ),
+          { version: api.extrinsicVersion }
+        );
+
+        const extrinsic = api.registry.createType(
+          "Extrinsic",
+          { method: signerPayload.method },
+          { version: api.extrinsicVersion }
+        );
+        return extrinsic;
+      });
+      const unsigned: SubmittableExtrinsic<"promise", any> = await (batchAll
+        ? api.tx.utility.batchAll
+        : api.tx.utility.batch)(calls);
+      return this.createTransaction({
+        address: this.__localId,
+        extrinsic: unsigned,
+        outputType: batchAll
+          ? "BatchAllTransactionResult"
+          : "BatchTransactionResult",
       });
     },
     async nfts(args: {

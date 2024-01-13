@@ -50,16 +50,16 @@ const CollectionComponent = defineComponent<
       const api = await this.apiConnector();
 
       const pinned = await pinata.pinJSONToIPFS(metadata);
+      const owner = await api.query.nft.collectionOwner(this.__localId);
+
       const unsigned = api.tx.nft.mintSeries(
         this.__localId,
         quantity,
-        null,
-        attributes,
-        new Text(api.registry, `ipfs://${pinned.IpfsHash}`).toHex(),
+        owner.toString(),
+        {"IpfsShared":  `ipfs://${pinned.IpfsHash}` },
         null
       );
 
-      const owner = await api.query.nft.collectionOwner(this.__localId);
       return this.createTransaction({
         address: owner.toString(),
         extrinsic: unsigned,
